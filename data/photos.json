@@ -84,6 +84,20 @@
     "blurDataURL": "data:image/jpeg;base64,/9j/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAUAA8DASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAMGAQX/xAAfEAACAgEEAwAAAAAAAAAAAAABAgADBAUREkEhMVH/xAAWAQEBAQAAAAAAAAAAAAAAAAABAAL/xAAXEQEBAQEAAAAAAAAAAAAAAAAAAREx/9oADAMBAAIRAxEAPwCfTAtNorNbBSfkfbpCVXcLAyjbfedu67Gts5jLVfPUzUdTxrEVUdWI7memzEjYSCQDEqSW9whGJ//Z"
   },
   {
+    "id": "gravity-2026-6",
+    "src": "/images/gallery/show/Gravity.2026-6.jpg",
+    "width": 1707,
+    "height": 2560,
+    "alt": "A racing harness against a teal interior, Gravity 2026",
+    "title": "Harness",
+    "category": "detail",
+    "event": "Gravity 2026",
+    "year": 2026,
+    "settings": "24mm · f/5.6 · 1/1000s · ISO 20000",
+    "blurDataURL": "data:image/jpeg;base64,/9j/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAUAA0DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAUGB//EACIQAAEEAgIBBQAAAAAAAAAAAAEAAgMEBRESQVEGEyEiMf/EABYBAQEBAAAAAAAAAAAAAAAAAAMAAv/EABoRAAICAwAAAAAAAAAAAAAAAAABAjEDESH/2gAMAwEAAhEDEQA/AJ4Ze3BY5MeQPCpq2alsVo3sAJ19ktz2G9omes3bD0Okkr3pagcxux8/iqD5JbRpEMbTBxLQRrtQvqSCOLJOEbdA+EIWmHhs/9k=",
+    "featured": true
+  },
+  {
     "id": "gravity-2026",
     "src": "/images/gallery/show/Gravity.2026.jpg",
     "width": 2560,
@@ -745,19 +759,6 @@
     "year": 2026,
     "settings": "29mm · f/5.6 · 1/800s · ISO 10000",
     "blurDataURL": "data:image/jpeg;base64,/9j/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAUAA0DASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAMEAgb/xAAbEAEAAwEBAQEAAAAAAAAAAAABAAIDESExMv/EABYBAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAAMAAwAAAAAAAAAAAAAAAAACAwEhMf/aAAwDAQACEQMRAD8A5bAdVtXxI6lbp+vkXhqZ2Sh2bO+q87BWc2bOiHJQ6Sgup9hCDRLh/9k="
-  },
-  {
-    "id": "gravity-2026-6",
-    "src": "/images/gallery/show/Gravity.2026-6.jpg",
-    "width": 1707,
-    "height": 2560,
-    "alt": "A racing harness against a teal interior, Gravity 2026",
-    "title": "Harness",
-    "category": "detail",
-    "event": "Gravity 2026",
-    "year": 2026,
-    "settings": "24mm · f/5.6 · 1/1000s · ISO 20000",
-    "blurDataURL": "data:image/jpeg;base64,/9j/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAUAA0DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAUGB//EACIQAAEEAgIBBQAAAAAAAAAAAAEAAgMEBRESQVEGEyEiMf/EABYBAQEBAAAAAAAAAAAAAAAAAAMAAv/EABoRAAICAwAAAAAAAAAAAAAAAAABAjEDESH/2gAMAwEAAhEDEQA/AJ4Ze3BY5MeQPCpq2alsVo3sAJ19ktz2G9omes3bD0Okkr3pagcxux8/iqD5JbRpEMbTBxLQRrtQvqSCOLJOEbdA+EIWmHhs/9k="
   },
   {
     "id": "gravity-2026-60",

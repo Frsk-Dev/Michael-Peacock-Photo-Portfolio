@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { activeCategories, type Category, type Photo } from "@/data/photos";
 import Lightbox from "./Lightbox";
 
@@ -14,6 +14,7 @@ interface Props {
 export default function Gallery({ photos }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const topRef = useRef<HTMLDivElement>(null);
 
   const visible = useMemo(
     () =>
@@ -27,13 +28,22 @@ export default function Gallery({ photos }: Props) {
     return map;
   }, [photos]);
 
-  // Changing the filter changes what "next" means, so close the viewer.
-  const changeFilter = useCallback((next: Filter) => {
-    setLightboxIndex(null);
-    setFilter(next);
-  }, []);
+  const changeFilter = useCallback(
+    (next: Filter) => {
+      if (next === filter) return;
+      setLightboxIndex(null);
+      setFilter(next);
 
-  // Deep-link support: /work#circuit opens that filter.
+      // Without this you stay wherever you were scrolled to while the grid
+      // swaps underneath you, which reads as "the filter did nothing".
+      requestAnimationFrame(() => {
+        topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    },
+    [filter],
+  );
+
+  // Deep-link support: /work#drift opens that filter.
   useEffect(() => {
     const hash = window.location.hash.replace("#", "") as Filter;
     if (hash && (hash === "all" || activeCategories.some((c) => c.id === hash)))
@@ -47,8 +57,11 @@ export default function Gallery({ photos }: Props) {
 
   return (
     <>
-      {/* Filter bar */}
-      <div className="sticky top-[72px] z-30 -mx-5 mb-10 border-y border-line/70 bg-ink/85 px-5 backdrop-blur-xl md:top-20 md:mx-0 md:px-0">
+      {/* Scroll anchor. The margin clears the fixed header. */}
+      <div ref={topRef} className="scroll-mt-32" aria-hidden />
+
+      {/* Filter bar - deliberately not sticky, so it stays put as you scroll */}
+      <div className="mb-10 border-y border-line/70">
         <div
           role="tablist"
           aria-label="Filter photographs by discipline"
@@ -83,6 +96,20 @@ export default function Gallery({ photos }: Props) {
         </div>
       </div>
 
+      {/* Result count, so a filter always gives visible feedback */}
+      <p className="mb-6 text-xs uppercase tracking-[0.16em] text-muted-2">
+        Showing {visible.length}{" "}
+        {visible.length === 1 ? "photograph" : "photographs"}
+        {filter !== "all" && (
+          <>
+            {" in "}
+            <span className="text-muted">
+              {filters.find((f) => f.id === filter)?.label}
+            </span>
+          </>
+        )}
+      </p>
+
       {/* Masonry grid - CSS columns keeps every frame at its true aspect ratio */}
       {visible.length ? (
         <div className="columns-1 gap-4 sm:columns-2 md:gap-5 xl:columns-3">
@@ -91,8 +118,8 @@ export default function Gallery({ photos }: Props) {
               key={photo.id}
               type="button"
               onClick={() => setLightboxIndex(i)}
-              aria-label={`Open ${photo.title}`}
-              className="group relative mb-4 block w-full break-inside-avoid overflow-hidden bg-surface md:mb-5"
+              aria-label={`Open ${photo.title} full screen`}
+              className="group relative mb-4 block w-full cursor-zoom-in break-inside-avoid overflow-hidden bg-surface md:mb-5"
             >
               <Image
                 src={photo.src}
@@ -119,6 +146,20 @@ export default function Gallery({ photos }: Props) {
                     </span>
                   )}
                 </span>
+              </span>
+
+              {/* Expand hint, so it is obvious the frame opens */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-4 top-4 grid h-9 w-9 place-items-center border border-bone/30 bg-ink/60 text-bone opacity-0 backdrop-blur transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path
+                    d="M5.5 1H1v4.5M8.5 1H13v4.5M13 8.5V13H8.5M1 8.5V13h4.5"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                </svg>
               </span>
 
               {/* Corner accent rule */}

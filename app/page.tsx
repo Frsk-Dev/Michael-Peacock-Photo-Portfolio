@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/data/site";
 import { featuredPhotos, photos, activeCategories } from "@/data/photos";
+import FeaturedGrid from "@/components/FeaturedGrid";
 
 export default function HomePage() {
   const hero = featuredPhotos[0] ?? photos[0];
@@ -160,43 +161,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-          {grid.map((photo, i) => (
-            <Link
-              key={photo.id}
-              href={`/work#${photo.category}`}
-              className="group reveal relative block overflow-hidden bg-surface"
-              data-reveal-delay={i * 70}
-            >
-              <div className="relative aspect-[4/5] w-full overflow-hidden">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  placeholder={photo.blurDataURL ? "blur" : "empty"}
-                  blurDataURL={photo.blurDataURL}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                />
-                <span
-                  aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-ink/85 via-transparent to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-100"
-                />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="font-display text-[10px] uppercase tracking-[0.24em] text-accent">
-                  {photo.category.replace("-", " ")}
-                </p>
-                <h3 className="mt-2 font-display text-lg font-bold uppercase tracking-tight text-bone">
-                  {photo.title}
-                </h3>
-                {photo.location && (
-                  <p className="mt-1 text-xs text-muted">{photo.location}</p>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedGrid photos={grid} />
       </section>
 
       {/* ------------------------------------------------------- Services */}
