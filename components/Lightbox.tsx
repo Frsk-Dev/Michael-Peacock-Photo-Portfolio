@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Photo } from "@/data/photos";
 
 interface Props {
@@ -20,6 +20,11 @@ export default function Lightbox({
   const photo = photos[index];
   const dialogRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  // A full-size frame can take a moment to arrive. Without this the viewer
+  // is just a black rectangle and the click reads as having done nothing.
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => setLoaded(false), [index]);
 
   const go = useCallback(
     (delta: number) => {
@@ -152,18 +157,42 @@ export default function Lightbox({
       {/* Stage */}
       <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3 md:px-20">
         <div className="pointer-events-none relative flex h-full w-full items-center justify-center">
+          {/* Blurred stand-in at the right shape, up instantly from the
+              inlined placeholder, so there is always something on screen. */}
+          {!loaded && photo.blurDataURL && (
+            <img
+              src={photo.blurDataURL}
+              alt=""
+              aria-hidden
+              style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+              className="absolute max-h-full max-w-full animate-fade object-contain opacity-40 blur-2xl"
+            />
+          )}
+
           <Image
             key={photo.id}
             src={photo.src}
             alt={photo.alt}
             width={photo.width}
             height={photo.height}
-            placeholder={photo.blurDataURL ? "blur" : "empty"}
-            blurDataURL={photo.blurDataURL}
-            sizes="(max-width: 768px) 100vw, 90vw"
+            sizes="(max-width: 768px) 100vw, 92vw"
             priority
-            className="max-h-full w-auto max-w-full animate-fade object-contain"
+            onLoad={() => setLoaded(true)}
+            onError={() => setLoaded(true)}
+            className={`max-h-full w-auto max-w-full object-contain transition-opacity duration-500 ${
+              loaded ? "opacity-100" : "opacity-0"
+            }`}
           />
+
+          {!loaded && (
+            <span
+              role="status"
+              aria-label="Loading photograph"
+              className="absolute grid place-items-center"
+            >
+              <span className="block h-9 w-9 animate-spin rounded-full border-2 border-bone/25 border-t-accent" />
+            </span>
+          )}
         </div>
 
         {photos.length > 1 && (

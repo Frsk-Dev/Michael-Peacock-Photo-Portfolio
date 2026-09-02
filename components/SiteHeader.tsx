@@ -45,12 +45,21 @@ export default function SiteHeader() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 backdrop-blur-lg backdrop-saturate-150 transition-[background-color,border-color,backdrop-filter] duration-500 ${
         scrolled || open
-          ? "border-b border-line/80 bg-ink/85 backdrop-blur-xl"
-          : "border-b border-transparent bg-transparent"
+          ? "border-b border-line/80 bg-ink/85"
+          : "border-b border-bone/10 bg-ink/25"
       }`}
     >
+      {/* Soft scrim under the bar so the blur has an edge to read against
+          when it is sitting over a bright photograph. */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[140%] bg-gradient-to-b from-ink/70 via-ink/25 to-transparent transition-opacity duration-500 ${
+          scrolled || open ? "opacity-0" : "opacity-100"
+        }`}
+      />
+
       <div className="shell flex h-[72px] items-center justify-between gap-6 md:h-20">
         <Link
           href="/"

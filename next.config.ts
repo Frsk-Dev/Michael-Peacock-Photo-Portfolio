@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
     // Photos are served from /public, so no remote patterns are needed.
     // AVIF first, WebP fallback - a big win on image-heavy pages.
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 828, 1080, 1200, 1600, 2048, 2560, 3840],
+    // Capped at 2560 to match the longest edge the importer writes. Going
+    // higher makes Next generate a pointless upscale of a 2560px source,
+    // which is slow to produce and no sharper.
+    deviceSizes: [640, 828, 1080, 1200, 1600, 2048, 2560],
+    imageSizes: [96, 128, 256, 384],
   },
 };
 
