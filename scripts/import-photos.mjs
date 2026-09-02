@@ -9,8 +9,9 @@
  *   - copies images in from an external folder (--from), resizing them to a
  *     sensible web size on the way (originals are left untouched)
  *   - scans public/images/gallery (including one level of sub-folders)
- *   - measures each image, reads its EXIF for the camera settings line, and
- *     builds a tiny blur-up placeholder
+ *   - measures each image, reads its EXIF for the settings and capture year,
+ *     and builds a tiny blur-up placeholder
+ *   - does NOT invent a title: an untitled frame is labelled with its event
  *   - writes data/photos.json, PRESERVING any metadata you have already
  *     edited for a file (title, alt, category, event, location, year,
  *     featured, settings)
@@ -110,15 +111,6 @@ function parseArgs(argv) {
 }
 
 // ---------------------------------------------------------------- helpers
-
-/** "silverstone-turn-three_02" -> "Silverstone Turn Three 02" */
-function titleFromFilename(name) {
-  return name
-    .replace(/[-_.]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 /** Pull a 4-digit year out of a filename or folder path, if one is there. */
 function yearFrom(str) {
@@ -362,8 +354,12 @@ async function main() {
       src: "/images/gallery/" + rel.map(encodeURIComponent).join("/"),
       width: meta.width,
       height: meta.height,
-      alt: `${titleFromFilename(base)} - motorsport photograph by Michael Peacock`,
-      title: titleFromFilename(base),
+      // No title is generated on purpose. A frame with no title is labelled
+      // with its event, which beats "Gravity 2026 15". Add titles by hand in
+      // data/photos.json for the shots that deserve one.
+      alt: args.event
+        ? `${args.event} - motorsport photograph by Michael Peacock`
+        : `Motorsport photograph by Michael Peacock`,
       category:
         folder && CATEGORY_IDS.includes(folder) ? folder : DEFAULT_CATEGORY,
       blurDataURL: await blurPlaceholder(file),
@@ -393,6 +389,17 @@ async function main() {
 
     out.push(photo);
   }
+
+  // Manifest order is meaningful - the first featured photo is the home page
+  // hero - so keep whatever order the file already had and append new frames
+  // at the end, rather than re-sorting everything by filename.
+  const prevOrder = new Map(existing.map((p, i) => [p.id, i]));
+  out.sort((a, b) => {
+    const ai = prevOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+    const bi = prevOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+    if (ai !== bi) return ai - bi;
+    return a.id.localeCompare(b.id, undefined, { numeric: true });
+  });
 
   // Featured: if you have not marked any yourself, feature the first six.
   if (!out.some((p) => p.featured)) {

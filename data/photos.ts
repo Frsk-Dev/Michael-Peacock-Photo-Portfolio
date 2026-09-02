@@ -38,7 +38,11 @@ export interface Photo {
   height: number;
   /** Meaningful alt text. Describe the subject and the action. */
   alt: string;
-  title: string;
+  /**
+   * Optional. Leave it out and the frame is labelled with its event name,
+   * which is usually what you want. Add one only for a shot worth naming.
+   */
+  title?: string;
   category: Category;
   event?: string;
   location?: string;
@@ -73,6 +77,13 @@ export const featuredPhotos = photos.filter((p) => p.featured);
 export const activeCategories = categories.filter((c) =>
   photos.some((p) => p.category === c.id),
 );
+
+/**
+ * What to show on a frame: your own title if you have written one for it,
+ * otherwise the event it came from.
+ */
+export const photoLabel = (p: Photo) =>
+  p.title?.trim() || p.event?.trim() || "Untitled";
 
 export const isPlaceholder = (p: Photo) => p.id.startsWith("placeholder-");
 

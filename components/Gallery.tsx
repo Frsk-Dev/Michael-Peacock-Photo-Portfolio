@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { activeCategories, type Category, type Photo } from "@/data/photos";
+import {
+  activeCategories,
+  photoLabel,
+  type Category,
+  type Photo,
+} from "@/data/photos";
 import Lightbox from "./Lightbox";
 
 type Filter = Category | "all";
@@ -118,7 +123,7 @@ export default function Gallery({ photos }: Props) {
               key={photo.id}
               type="button"
               onClick={() => setLightboxIndex(i)}
-              aria-label={`Open ${photo.title} full screen`}
+              aria-label={`Open ${photoLabel(photo)} full screen`}
               className="group relative mb-4 block w-full cursor-zoom-in break-inside-avoid overflow-hidden bg-surface md:mb-5"
             >
               <Image
@@ -138,11 +143,11 @@ export default function Gallery({ photos }: Props) {
               <span className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-ink/90 via-ink/10 to-transparent p-5 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100">
                 <span className="translate-y-2 transition-transform duration-500 group-hover:translate-y-0 group-focus-visible:translate-y-0">
                   <span className="block font-display text-base font-bold uppercase tracking-tight text-bone">
-                    {photo.title}
+                    {photoLabel(photo)}
                   </span>
-                  {(photo.location || photo.year) && (
+                  {photo.location && (
                     <span className="mt-1 block text-xs text-muted">
-                      {[photo.location, photo.year].filter(Boolean).join(" · ")}
+                      {photo.location}
                     </span>
                   )}
                 </span>

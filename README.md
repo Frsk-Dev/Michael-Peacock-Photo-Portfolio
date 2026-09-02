@@ -50,9 +50,12 @@ the manifest.
 **It never overwrites your edits.** Once you have written a title or caption
 for a photo, re-running the importer keeps it.
 
-### Then tidy the titles
+### Naming frames
 
-Open `data/photos.json` and edit. A full entry looks like:
+Photos are labelled with their **event name** by default. Nothing is
+auto-generated from filenames, so you never get "Gravity 2026 15" as a caption.
+
+A typical entry in `data/photos.json`:
 
 ```json
 {
@@ -61,31 +64,29 @@ Open `data/photos.json` and edit. A full entry looks like:
   "width": 2560,
   "height": 1368,
   "alt": "A drift car laying down heavy smoke in front of a packed crowd, Gravity 2026",
-  "title": "Crowd Pleaser",
   "category": "drift",
   "event": "Gravity 2026",
-  "location": "",
   "year": 2026,
   "featured": true,
-  "settings": "174mm · f/7.1 · 1/2000s · ISO 1250",
+  "settings": "359mm · f/16 · 1/60s · ISO 125",
   "blurDataURL": "data:image/jpeg;base64,..."
 }
 ```
 
-- `title` — shown on grid hover and in the lightbox
-- `event`, `location`, `year` — the caption line in the lightbox
-- `settings` — read from EXIF; edit freely
+- `event` — what appears on the tile and in the viewer
+- `location` — optional; shown beside the event if you set it
+- `title` — **optional**. Leave it out and the frame shows its event name.
+  Add one only for a shot worth naming individually, and that name is used
+  instead.
 - `category` — moves the photo between filters
-- `featured: true` — puts it on the home page. **The first featured photo is
-  the hero image.**
+- `featured: true` — puts it on the home page. **The first featured photo in
+  the file is the hero image**, which is why the importer never reorders the
+  manifest: it keeps your order and appends new frames at the end.
 - `alt` — worth writing properly; it is what screen readers and Google read
+- `settings` — read from EXIF and kept in the file, but **not displayed
+  anywhere**. To show it again, add it back to the caption block in
+  `components/Lightbox.tsx`.
 - `id`, `src`, `width`, `height`, `blurDataURL` — leave these to the importer
-
-**The titles currently in there are my read of each frame** — "Crowd Pleaser",
-"Full Commitment", "The Beetle". They deliberately avoid naming cars or
-drivers, because getting those wrong is worse than leaving them out. Swapping
-in the real car, driver and team names is the single biggest improvement you
-can make to this gallery.
 
 ## Changing the words
 

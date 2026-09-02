@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Photo } from "@/data/photos";
+import { photoLabel, type Photo } from "@/data/photos";
 
 interface Props {
   photos: Photo[];
@@ -99,19 +99,14 @@ export default function Lightbox({
     else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) onClose();
   };
 
-  // Skip the year when the event name already carries it ("Gravity 2026").
-  const yearIsRedundant =
-    photo.year != null && (photo.event ?? "").includes(String(photo.year));
-  const meta = [photo.event, photo.location, yearIsRedundant ? null : photo.year]
-    .filter(Boolean)
-    .join(" · ");
+  const label = photoLabel(photo);
 
   return (
     <div
       ref={dialogRef}
       role="dialog"
       aria-modal="true"
-      aria-label={`${photo.title}. Image ${index + 1} of ${photos.length}`}
+      aria-label={`${photoLabel(photo)}. Image ${index + 1} of ${photos.length}`}
       tabIndex={-1}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -203,19 +198,14 @@ export default function Lightbox({
         )}
       </div>
 
-      {/* Caption */}
+      {/* Caption - the event, and a location if one is set. Nothing else. */}
       <div className="relative z-10 px-5 pb-6 pt-5 md:px-8 md:pb-8">
-        <div className="mx-auto flex max-w-5xl flex-col gap-2 border-t border-line/70 pt-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="font-display text-lg font-bold uppercase tracking-tight text-bone md:text-xl">
-              {photo.title}
-            </h2>
-            {meta && <p className="mt-1 text-sm text-muted">{meta}</p>}
-          </div>
-          {photo.settings && (
-            <p className="font-display text-[11px] tracking-[0.16em] text-muted-2">
-              {photo.settings}
-            </p>
+        <div className="mx-auto flex max-w-5xl items-baseline justify-between gap-4 border-t border-line/70 pt-5">
+          <h2 className="font-display text-lg font-bold uppercase tracking-tight text-bone md:text-xl">
+            {label}
+          </h2>
+          {photo.location && (
+            <p className="text-sm text-muted">{photo.location}</p>
           )}
         </div>
       </div>

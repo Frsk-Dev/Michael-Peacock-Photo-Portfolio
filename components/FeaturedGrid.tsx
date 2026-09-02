@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import type { Photo } from "@/data/photos";
+import { photoLabel, type Photo } from "@/data/photos";
 import Lightbox from "./Lightbox";
 
 /**
@@ -22,7 +22,7 @@ export default function FeaturedGrid({ photos }: { photos: Photo[] }) {
             key={photo.id}
             type="button"
             onClick={() => setIndex(i)}
-            aria-label={`Open ${photo.title} full screen`}
+            aria-label={`Open ${photoLabel(photo)} full screen`}
             className="group reveal relative block cursor-zoom-in overflow-hidden bg-surface text-left"
             data-reveal-delay={i * 70}
           >
@@ -61,7 +61,7 @@ export default function FeaturedGrid({ photos }: { photos: Photo[] }) {
                 {photo.category.replace("-", " ")}
               </p>
               <h3 className="mt-2 font-display text-lg font-bold uppercase tracking-tight text-bone">
-                {photo.title}
+                {photoLabel(photo)}
               </h3>
               {photo.location && (
                 <p className="mt-1 text-xs text-muted">{photo.location}</p>
