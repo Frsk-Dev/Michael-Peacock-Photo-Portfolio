@@ -1,0 +1,27 @@
+{
+  "name": "michael-peacock-photography",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Motorsport photography portfolio for Michael Peacock",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "import-photos": "node scripts/import-photos.mjs"
+  },
+  "dependencies": {
+    "next": "^16.3.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "sharp": "^0.34.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.0"
+  }
+}
