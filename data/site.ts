@@ -7,21 +7,21 @@
 export const site = {
   name: "Michael Peacock",
   role: "Motorsport Photographer",
-  /** Used in <title>, Open Graph and the JSON-LD block. */
+  /** Used in <title>, Open Graph and the JSON-LD block. Set this to your real domain. */
   url: "https://michaelpeacock.photo",
-  tagline: "Motorsport, at the limit.",
+  tagline: "Drifting, show cars and the people around them",
   description:
-    "Motorsport photography by Michael Peacock - circuit racing, rally and endurance. Trackside stills, panning, pit lane and paddock portraiture.",
+    "Motorsport and car culture photography by Michael Peacock — drift events, show cars and the details that make them. Available for events, features and licensing.",
 
   /** Shown on the home hero. Keep it to two short lines. */
-  heroLines: ["Speed,", "held still."],
+  heroLines: ["Sideways,", "held still."],
   heroIntro:
-    "Trackside photography from circuit racing, rally stages and endurance paddocks. Available for race weekends, team commissions and editorial licensing.",
+    "Drift action, show cars and close detail work from the UK car scene. Available for events, feature shoots and editorial licensing.",
 
   email: "michaelpeacock1993@gmail.com",
   phone: "",
   location: "United Kingdom",
-  /** Leave blank to hide a link entirely. */
+  /** Leave a value blank to hide that link entirely. */
   socials: {
     instagram: "https://instagram.com/",
     x: "",
@@ -33,38 +33,37 @@ export const site = {
     heading: "Behind the lens",
     portrait: "/images/portrait.jpg",
     body: [
-      "I photograph motorsport because it refuses to hold still. A car at racing speed gives you a fraction of a second, in poor light, behind a fence, with the shot already gone by the time you have heard it arrive. Getting it right is the whole appeal.",
-      "My work covers circuit racing, rally stages and endurance events - trackside action, pit-lane detail and the quieter moments in the paddock that say as much about a race weekend as the racing does.",
-      "I shoot for teams, drivers, series organisers and editorial clients. If you need coverage of a race weekend, a test day, or a specific car, get in touch.",
+      "I photograph cars because they refuse to hold still. A drift car gives you a fraction of a second — sideways, half-hidden in its own tyre smoke, with the shot gone by the time you have heard it arrive. Getting it right is the whole appeal.",
+      "The work splits three ways: drift action from the bale line, show cars under hall lighting, and the close detail work — a harness, a wheel, a dressed engine bay — that says as much about a build as the whole car does.",
+      "I shoot for drivers, teams, event organisers and clubs. If you want your car, your build or your event covered properly, get in touch.",
     ],
     /** Small facts column beside the bio. Add or remove freely. */
     facts: [
       { label: "Based in", value: "United Kingdom" },
-      { label: "Shooting since", value: "2014" },
-      { label: "Disciplines", value: "Circuit, rally, endurance" },
-      { label: "Available for", value: "Race weekends, tests, commissions" },
+      { label: "Shoots", value: "Drift events, shows, feature cars" },
+      { label: "Body", value: "Canon EOS R10" },
+      { label: "Available for", value: "Events, features, commissions" },
     ],
+    /** Pulled from the EXIF of the current gallery — update as your kit changes. */
     gear: [
-      { label: "Bodies", value: "Canon EOS R5, Canon EOS R6 Mark II" },
-      { label: "Long", value: "RF 100-500mm f/4.5-7.1L, EF 400mm f/2.8L" },
-      { label: "Mid", value: "RF 70-200mm f/2.8L" },
-      { label: "Wide", value: "RF 24-70mm f/2.8L, RF 16mm f/2.8" },
-      { label: "Other", value: "Monopod, remote triggers, ND filters" },
+      { label: "Body", value: "Canon EOS R10" },
+      { label: "Standard", value: "Canon RF 24-105mm f/4L IS USM" },
+      { label: "Long", value: "Canon RF 100-400mm f/5.6-8 IS USM" },
     ],
   },
 
   services: [
     {
-      title: "Race weekends",
-      body: "Full coverage across practice, qualifying and race. Fast turnaround galleries delivered the same evening where the schedule allows.",
+      title: "Event coverage",
+      body: "Drift days, shows and club meets. Full-day coverage of the action, the cars and the atmosphere, delivered as an edited gallery.",
     },
     {
-      title: "Team & driver commissions",
-      body: "Sponsor-facing imagery, car detail sets, pit-crew work and driver portraiture built around your marketing needs.",
+      title: "Feature cars",
+      body: "Your build shot properly — full-car sets plus the detail work that shows where the money and the hours actually went.",
     },
     {
-      title: "Editorial licensing",
-      body: "Archive access and licensing for publications, series communications and manufacturer press use.",
+      title: "Licensing",
+      body: "Archive access for drivers, teams, sponsors and publications. Get in touch with the event and the car you are after.",
     },
   ],
 };

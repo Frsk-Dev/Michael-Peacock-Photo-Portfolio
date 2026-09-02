@@ -21,7 +21,7 @@ export default function SiteFooter() {
             <p className="display mt-5 text-3xl text-bone sm:text-4xl md:text-5xl">
               Let us talk
               <br />
-              about your <span className="text-accent">race weekend</span>
+              about your <span className="text-accent">event</span>
             </p>
             <a
               href={`mailto:${site.email}`}

@@ -7,6 +7,12 @@ export default function HomePage() {
   const hero = featuredPhotos[0] ?? photos[0];
   const grid = (featuredPhotos.length ? featuredPhotos : photos).slice(1, 7);
 
+  // Most recent event in the manifest, for the statement block.
+  const latestEvent =
+    photos
+      .filter((p) => p.event)
+      .sort((a, b) => (b.year ?? 0) - (a.year ?? 0))[0]?.event ?? "—";
+
   return (
     <>
       {/* ---------------------------------------------------------- Hero */}
@@ -36,7 +42,7 @@ export default function HomePage() {
         <div className="shell relative z-10 w-full pb-16 pt-32 md:pb-24">
           <p className="eyebrow animate-fade">{site.tagline}</p>
 
-          <h1 className="display mt-6 text-[clamp(3rem,13vw,10rem)] text-bone">
+          <h1 className="display mt-6 text-[clamp(2.75rem,11vw,8.5rem)] text-bone">
             {site.heroLines.map((line, i) => (
               <span key={line} className="block overflow-hidden">
                 <span
@@ -112,20 +118,19 @@ export default function HomePage() {
           </div>
           <div className="md:col-span-8">
             <p className="display reveal text-2xl leading-[1.15] text-bone sm:text-3xl md:text-[2.6rem]">
-              A race weekend gives you one chance at every corner. I shoot for
-              the frame that carries the <span className="text-accent">noise,
-              the light and the speed</span> — and holds up printed a metre wide.
+              A car at full lock gives you one frame, and it is gone. I shoot
+              for the one that carries the <span className="text-accent">smoke,
+              the light and the noise</span> — and holds up printed a metre wide.
             </p>
 
-            <dl className="reveal mt-14 grid grid-cols-2 gap-8 sm:grid-cols-4">
+            <dl className="reveal mt-14 grid grid-cols-2 gap-8 sm:grid-cols-3">
               {[
-                { n: `${photos.length}+`, l: "Frames published" },
-                { n: `${activeCategories.length}`, l: "Disciplines" },
-                { n: "10 yrs", l: "Trackside" },
-                { n: "24h", l: "Gallery turnaround" },
+                { n: `${photos.length}`, l: "Frames in the gallery" },
+                { n: `${activeCategories.length}`, l: "Bodies of work" },
+                { n: latestEvent, l: "Most recent shoot" },
               ].map((s) => (
                 <div key={s.l} className="border-t border-line pt-4">
-                  <dt className="font-display text-3xl font-bold tracking-tight text-bone md:text-4xl">
+                  <dt className="font-display text-2xl font-bold tracking-tight text-bone md:text-3xl">
                     {s.n}
                   </dt>
                   <dd className="mt-2 text-xs uppercase tracking-[0.14em] text-muted-2">

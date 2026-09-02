@@ -5,7 +5,7 @@ import { photos, usingPlaceholders } from "@/data/photos";
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Motorsport photography portfolio — circuit racing, rally, endurance, pit lane, portraits and details.",
+    "Motorsport and car culture photography — drift action, show cars and detail work.",
 };
 
 export default function WorkPage() {

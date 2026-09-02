@@ -3,25 +3,38 @@
  * Photo import / manifest builder.
  *
  *   npm run import-photos
- *   npm run import-photos -- --from "D:/Photos/Silverstone 2025" --category circuit
+ *   npm run import-photos -- --from "D:/Photos/Gravity 2026/Drifting" --category drift --event "Gravity 2026"
  *
  * What it does:
- *   - optionally copies images in from an external folder (--from)
+ *   - copies images in from an external folder (--from), resizing them to a
+ *     sensible web size on the way (originals are left untouched)
  *   - scans public/images/gallery (including one level of sub-folders)
- *   - measures each image and builds a tiny blur-up placeholder
+ *   - measures each image, reads its EXIF for the camera settings line, and
+ *     builds a tiny blur-up placeholder
  *   - writes data/photos.json, PRESERVING any metadata you have already
  *     edited for a file (title, alt, category, event, location, year,
  *     featured, settings)
  *   - drops entries whose file no longer exists
  *
  * Sub-folder names matching a category set that photo's category, so
- * public/images/gallery/rally/foo.jpg lands in the Rally filter.
+ * public/images/gallery/drift/foo.jpg lands in the Drift filter.
+ *
+ * Flags:
+ *   --from <dir>        copy images in from here first
+ *   --category <id>     category for copied images (also picks the sub-folder)
+ *   --event <name>      stamp this event name on newly imported photos
+ *   --location <place>  stamp this location on newly imported photos
+ *   --max-edge <px>     longest edge for the web copies (default 2560)
+ *   --quality <1-100>   JPEG quality for the web copies (default 82)
+ *   --no-resize         copy originals through untouched
+ *   --force             reset ALL metadata to the derived defaults
  */
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import exifReader from "exif-reader";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -29,14 +42,16 @@ const GALLERY_DIR = path.join(ROOT, "public", "images", "gallery");
 const MANIFEST = path.join(ROOT, "data", "photos.json");
 
 const CATEGORY_IDS = [
+  "drift",
+  "show",
+  "detail",
   "circuit",
   "rally",
   "endurance",
   "pit-lane",
   "portrait",
-  "detail",
 ];
-const DEFAULT_CATEGORY = "circuit";
+const DEFAULT_CATEGORY = "drift";
 const EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 
 /** Fields the script must never overwrite once you have edited them. */
@@ -59,17 +74,37 @@ const exit = (msg) => {
 // ---------------------------------------------------------------- args
 
 function parseArgs(argv) {
-  const args = { from: null, category: null, force: false };
+  const args = {
+    from: null,
+    category: null,
+    event: null,
+    location: null,
+    maxEdge: 2560,
+    quality: 82,
+    resize: true,
+    force: false,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--from") args.from = argv[++i];
     else if (a === "--category") args.category = argv[++i];
+    else if (a === "--event") args.event = argv[++i];
+    else if (a === "--location") args.location = argv[++i];
+    else if (a === "--max-edge") args.maxEdge = Number(argv[++i]);
+    else if (a === "--quality") args.quality = Number(argv[++i]);
+    else if (a === "--no-resize") args.resize = false;
     else if (a === "--force") args.force = true;
   }
   if (args.category && !CATEGORY_IDS.includes(args.category)) {
     exit(
       `Unknown category "${args.category}".\n    Valid: ${CATEGORY_IDS.join(", ")}`,
     );
+  }
+  if (!Number.isFinite(args.maxEdge) || args.maxEdge < 320) {
+    exit("--max-edge must be a number of at least 320.");
+  }
+  if (!Number.isFinite(args.quality) || args.quality < 1 || args.quality > 100) {
+    exit("--quality must be between 1 and 100.");
   }
   return args;
 }
@@ -79,7 +114,7 @@ function parseArgs(argv) {
 /** "silverstone-turn-three_02" -> "Silverstone Turn Three 02" */
 function titleFromFilename(name) {
   return name
-    .replace(/[-_]+/g, " ")
+    .replace(/[-_.]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\b\w/g, (c) => c.toUpperCase());
@@ -124,31 +159,133 @@ async function blurPlaceholder(file) {
   return `data:image/jpeg;base64,${buf.toString("base64")}`;
 }
 
+/** Format a shutter speed the way a photographer writes it. */
+function shutter(seconds) {
+  if (!seconds) return null;
+  if (seconds >= 1) return `${Number(seconds.toFixed(1))}s`;
+  return `1/${Math.round(1 / seconds)}s`;
+}
+
+/**
+ * Build the "400mm · f/2.8 · 1/1000s · ISO 200" line from EXIF.
+ * Returns undefined when the file carries no usable exposure data.
+ */
+function settingsFromExif(exifBuffer) {
+  if (!exifBuffer) return undefined;
+  let tags;
+  try {
+    tags = exifReader(exifBuffer);
+  } catch {
+    return undefined;
+  }
+  const p = tags?.Photo ?? {};
+  const parts = [];
+
+  if (p.FocalLength) parts.push(`${Math.round(p.FocalLength)}mm`);
+  if (p.FNumber) parts.push(`f/${Number(p.FNumber.toFixed(1))}`);
+  const s = shutter(p.ExposureTime);
+  if (s) parts.push(s);
+  const iso = Array.isArray(p.ISOSpeedRatings)
+    ? p.ISOSpeedRatings[0]
+    : p.ISOSpeedRatings;
+  if (iso) parts.push(`ISO ${iso}`);
+
+  return parts.length ? parts.join(" · ") : undefined;
+}
+
+/** The date the shutter actually fired, for the year field. */
+function yearFromExif(exifBuffer) {
+  if (!exifBuffer) return undefined;
+  try {
+    const tags = exifReader(exifBuffer);
+    const d = tags?.Photo?.DateTimeOriginal ?? tags?.Image?.DateTime;
+    if (d instanceof Date && !Number.isNaN(d.valueOf())) return d.getFullYear();
+  } catch {
+    /* no usable date */
+  }
+  return undefined;
+}
+
 // ---------------------------------------------------------------- copy-in
 
-async function copyFrom(srcDir, category) {
-  const target = category ? path.join(GALLERY_DIR, category) : GALLERY_DIR;
+async function copyFrom(srcDir, args) {
+  const target = args.category
+    ? path.join(GALLERY_DIR, args.category)
+    : GALLERY_DIR;
   await fs.mkdir(target, { recursive: true });
 
   const resolved = path.resolve(srcDir);
-  const files = await walk(resolved);
+  const files = (await walk(resolved)).sort((a, b) =>
+    a.localeCompare(b, undefined, { numeric: true }),
+  );
   if (!files.length) exit(`No images found in ${resolved}`);
 
   let copied = 0;
+  let skipped = 0;
+  let bytesIn = 0;
+  let bytesOut = 0;
+
+  // Claimed within this run, so two sources never fight over one destination.
+  const claimed = new Set();
+
   for (const file of files) {
-    const dest = path.join(target, path.basename(file));
+    // Web copies are always JPEG. Only .jpg passes its name through unchanged:
+    // anything else gets its original extension folded into the name, so
+    // "shot.jpg" and "shot.png" stay two distinct photos rather than one
+    // silently overwriting the other. Deterministic, so re-runs still match.
+    const ext = path.extname(file).toLowerCase();
+    const stem = path.basename(file, path.extname(file));
+    let destName = ext === ".jpg" ? `${stem}.jpg` : `${stem}-${ext.slice(1)}.jpg`;
+
+    let n = 2;
+    while (claimed.has(destName.toLowerCase())) {
+      destName = `${stem}-${n++}.jpg`;
+    }
+    claimed.add(destName.toLowerCase());
+
+    const dest = path.join(target, destName);
+
     try {
       await fs.access(dest);
-      continue; // already there, leave it alone
+      skipped++;
+      continue; // already imported, leave it alone
     } catch {
-      /* not present - copy it */
+      /* not present - import it */
     }
-    await fs.copyFile(file, dest);
+
+    const srcStat = await fs.stat(file);
+    bytesIn += srcStat.size;
+
+    if (args.resize) {
+      await sharp(file)
+        .rotate() // bake in the EXIF orientation before stripping metadata
+        .resize(args.maxEdge, args.maxEdge, {
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .jpeg({ quality: args.quality, progressive: true, mozjpeg: true })
+        // Keep the colour profile so the web copy is not washed out; the rest
+        // of the EXIF (GPS, serial numbers) is dropped on purpose.
+        .withMetadata({ icc: "srgb" })
+        .toFile(dest);
+    } else {
+      await fs.copyFile(file, dest);
+    }
+
+    bytesOut += (await fs.stat(dest)).size;
     copied++;
+    if (copied % 10 === 0) process.stdout.write(`    ${copied} imported...\n`);
   }
+
+  const mb = (n) => `${(n / 1048576).toFixed(0)} MB`;
   console.log(
-    `  Copied ${copied} new image${copied === 1 ? "" : "s"} into ${path.relative(ROOT, target)}`,
+    `    ${copied} imported${skipped ? `, ${skipped} already present` : ""} -> ${path.relative(ROOT, target)}`,
   );
+  if (copied && args.resize) {
+    console.log(
+      `    ${mb(bytesIn)} of originals -> ${mb(bytesOut)} on disk (max ${args.maxEdge}px, q${args.quality})`,
+    );
+  }
 }
 
 // ---------------------------------------------------------------- main
@@ -160,7 +297,7 @@ async function main() {
 
   if (args.from) {
     console.log(`\n  Importing from ${args.from}`);
-    await copyFrom(args.from, args.category);
+    await copyFrom(args.from, args);
   }
 
   // Load whatever metadata already exists so we never clobber your edits.
@@ -185,6 +322,7 @@ async function main() {
   }
 
   const out = [];
+  const usedIds = new Set();
   let added = 0;
   let refreshed = 0;
 
@@ -192,10 +330,18 @@ async function main() {
     const rel = path.relative(GALLERY_DIR, file).split(path.sep);
     const folder = rel.length > 1 ? rel[0].toLowerCase() : null;
     const base = path.basename(file, path.extname(file));
-    const id = base
+
+    // Two files can share a stem across sub-folders - keep ids unique.
+    let id = base
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
+    if (usedIds.has(id)) {
+      let n = 2;
+      while (usedIds.has(`${id}-${n}`)) n++;
+      id = `${id}-${n}`;
+    }
+    usedIds.add(id);
 
     let meta;
     try {
@@ -223,8 +369,18 @@ async function main() {
       blurDataURL: await blurPlaceholder(file),
     };
 
-    const year = yearFrom(base) ?? yearFrom(rel.join("/"));
+    const settings = settingsFromExif(meta.exif);
+    if (settings) photo.settings = settings;
+
+    const year =
+      yearFromExif(meta.exif) ?? yearFrom(base) ?? yearFrom(rel.join("/"));
     if (year) photo.year = year;
+
+    // Stamp event/location on anything new, when the flags were given.
+    if (!prev) {
+      if (args.event) photo.event = args.event;
+      if (args.location) photo.location = args.location;
+    }
 
     if (prev && !args.force) {
       // Keep everything you have edited; only refresh the derived fields.

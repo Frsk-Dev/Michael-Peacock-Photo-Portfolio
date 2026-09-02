@@ -26,9 +26,8 @@ export default function ContactPage() {
           <span className="text-accent">conversation</span>
         </h1>
         <p className="mt-6 text-base leading-relaxed text-muted md:text-lg">
-          Race weekends, test days, team commissions and editorial licensing.
-          Tell me what you need and when, and I will come back to you with
-          availability and a quote.
+          Drift days, shows, feature cars and licensing. Tell me what you need
+          and when, and I will come back to you with availability and a quote.
         </p>
       </header>
 
@@ -60,7 +59,7 @@ export default function ContactPage() {
             <p className="eyebrow">Based in</p>
             <p className="mt-4 text-base text-bone">{site.location}</p>
             <p className="mt-2 text-sm text-muted">
-              Travelling across the UK and Europe for race weekends.
+              Travelling across the UK for events and feature shoots.
             </p>
           </div>
 
@@ -87,7 +86,7 @@ export default function ContactPage() {
           <div className="mt-10 border-t border-line pt-6">
             <p className="eyebrow">Response time</p>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              Usually within two working days. During a race weekend it may be
+              Usually within two working days. During an event weekend it may be
               the Monday after.
             </p>
           </div>

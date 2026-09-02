@@ -94,7 +94,10 @@ export default function Lightbox({
     else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) onClose();
   };
 
-  const meta = [photo.event, photo.location, photo.year]
+  // Skip the year when the event name already carries it ("Gravity 2026").
+  const yearIsRedundant =
+    photo.year != null && (photo.event ?? "").includes(String(photo.year));
+  const meta = [photo.event, photo.location, yearIsRedundant ? null : photo.year]
     .filter(Boolean)
     .join(" · ");
 
@@ -107,7 +110,7 @@ export default function Lightbox({
       tabIndex={-1}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      className="fixed inset-0 z-[80] flex animate-fade flex-col bg-ink/97 backdrop-blur-md outline-none"
+      className="fixed inset-0 z-80 flex animate-fade flex-col bg-ink/97 backdrop-blur-md outline-none"
     >
       {/* Backdrop click target - sits behind the image and the controls. */}
       <button
@@ -181,7 +184,7 @@ export default function Lightbox({
             {meta && <p className="mt-1 text-sm text-muted">{meta}</p>}
           </div>
           {photo.settings && (
-            <p className="font-display text-[11px] uppercase tracking-[0.16em] text-muted-2">
+            <p className="font-display text-[11px] tracking-[0.16em] text-muted-2">
               {photo.settings}
             </p>
           )}

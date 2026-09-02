@@ -70,8 +70,8 @@ export default function AboutPage() {
           <div className="md:col-span-4">
             <p className="eyebrow reveal">In the bag</p>
             <p className="reveal mt-5 max-w-xs text-sm leading-relaxed text-muted">
-              Long glass for the far side of the circuit, fast primes for the
-              paddock, and a body that keeps up with the light.
+              One body, two lenses. A standard zoom for the show floor and the
+              detail work, and the long end for the bale line.
             </p>
           </div>
           <div className="md:col-span-8">

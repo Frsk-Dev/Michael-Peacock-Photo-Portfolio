@@ -12,87 +12,80 @@ npm run start   # serve the production build
 
 ## Adding your photographs
 
-This is the part you will use most.
+This is the part you will use most. The current gallery holds 83 frames from
+Gravity 2026, imported from `D:/photos/ThroughMyLens/Gravity 2026/Keep/`.
 
-### 1. Put the images somewhere the site can see them
-
-Drop files into `public/images/gallery/`. If you put them in a sub-folder named
-after a category, the category is assigned automatically:
-
-```
-public/images/gallery/
-  circuit/
-    silverstone-turn-three-2025.jpg
-  rally/
-    kielder-night-stage-2025.jpg
-  endurance/
-  pit-lane/
-  portrait/
-  detail/
-```
-
-Files sitting loose in `gallery/` default to the `circuit` category — you can
-change that afterwards.
-
-### 2. Run the importer
+### The one command
 
 ```bash
-npm run import-photos
+npm run import-photos -- --from "D:/path/to/your/photos" --category drift --event "Event Name 2026"
 ```
 
-It measures every image, generates the little blurred preview that fades in
-while the full photo loads, and writes `data/photos.json`.
+That copies the images in, **resizes them to 2560px on the long edge** (your
+24MP originals are ~15MB each; the web copies come out around 400KB and your
+originals are never touched), reads the EXIF for the camera settings line,
+generates the blurred preview that fades in while the full photo loads, and
+updates `data/photos.json`.
 
-You can also copy images in from anywhere on your machine:
+Categories: `drift`, `show`, `detail`, and `circuit`, `rally`, `endurance`,
+`pit-lane`, `portrait` are defined ready for future work — **a filter only
+appears on the site once it has photos in it**, so the unused ones stay hidden.
 
-```bash
-npm run import-photos -- --from "D:/Photos/Silverstone 2025" --category circuit
-```
+Useful flags:
 
-**It never overwrites your edits.** Once you have written a proper title or
-caption for a photo, re-running the importer keeps it. (Use `--force` if you
-genuinely want everything reset to the filename-derived defaults.)
+| Flag | What it does |
+| --- | --- |
+| `--from <dir>` | Copy images in from this folder |
+| `--category <id>` | Category for the imported set (also picks the sub-folder) |
+| `--event "Name"` | Stamp an event name on the new photos |
+| `--location "Place"` | Stamp a location on the new photos |
+| `--max-edge 2560` | Longest edge of the web copies |
+| `--quality 82` | JPEG quality of the web copies |
+| `--no-resize` | Copy originals through untouched |
+| `--force` | Reset all metadata to the derived defaults |
 
-### 3. Tidy the titles
+Running it with no flags just rescans `public/images/gallery/` and rebuilds
+the manifest.
+
+**It never overwrites your edits.** Once you have written a title or caption
+for a photo, re-running the importer keeps it.
+
+### Then tidy the titles
 
 Open `data/photos.json` and edit. A full entry looks like:
 
 ```json
 {
-  "id": "silverstone-turn-three-2025",
-  "src": "/images/gallery/circuit/silverstone-turn-three-2025.jpg",
-  "width": 4000,
-  "height": 2667,
-  "alt": "A GT3 car turning in to Copse at Silverstone, late afternoon light",
-  "title": "Apex, Copse",
-  "category": "circuit",
-  "event": "British GT Round 4",
-  "location": "Silverstone, UK",
-  "year": 2025,
+  "id": "gravity-2026-26",
+  "src": "/images/gallery/drift/Gravity.2026-26.jpg",
+  "width": 2560,
+  "height": 1368,
+  "alt": "A drift car laying down heavy smoke in front of a packed crowd, Gravity 2026",
+  "title": "Crowd Pleaser",
+  "category": "drift",
+  "event": "Gravity 2026",
+  "location": "",
+  "year": 2026,
   "featured": true,
-  "settings": "400mm · f/2.8 · 1/1000s · ISO 200",
+  "settings": "174mm · f/7.1 · 1/2000s · ISO 1250",
   "blurDataURL": "data:image/jpeg;base64,..."
 }
 ```
 
-- `title`, `event`, `location`, `year`, `settings` — shown in the lightbox
-- `category` — one of `circuit`, `rally`, `endurance`, `pit-lane`, `portrait`, `detail`
-- `featured: true` — puts the photo on the home page (the first one becomes the hero)
+- `title` — shown on grid hover and in the lightbox
+- `event`, `location`, `year` — the caption line in the lightbox
+- `settings` — read from EXIF; edit freely
+- `category` — moves the photo between filters
+- `featured: true` — puts it on the home page. **The first featured photo is
+  the hero image.**
 - `alt` — worth writing properly; it is what screen readers and Google read
 - `id`, `src`, `width`, `height`, `blurDataURL` — leave these to the importer
 
-### 4. Remove the placeholders
-
-Once your own work is in:
-
-```bash
-rm public/images/gallery/placeholder-*.jpg
-npm run import-photos
-```
-
-The "Placeholders showing" notice on the Work page disappears on its own.
-
----
+**The titles currently in there are my read of each frame** — "Crowd Pleaser",
+"Full Commitment", "The Beetle". They deliberately avoid naming cars or
+drivers, because getting those wrong is worse than leaving them out. Swapping
+in the real car, driver and team names is the single biggest improvement you
+can make to this gallery.
 
 ## Changing the words
 
@@ -157,10 +150,10 @@ components/
 data/
   site.ts             all site copy and config
   photos.json         the photo manifest (generated, hand-editable)
-  photos.ts           types and helpers
+  photos.ts           types, categories and helpers
 scripts/
   import-photos.mjs   the importer
-  make-placeholders.mjs
+  make-placeholders.mjs   only needed if you ever want the demo images back
 ```
 
 ### Design notes
@@ -169,3 +162,6 @@ The interface is deliberately near-monochrome — dark greys, one red accent
 used sparingly for active states and emphasis. Photographs are the only real
 colour on the page, which keeps them from competing with the furniture.
 Change the palette in the `@theme` block at the top of `app/globals.css`.
+
+The gallery uses CSS columns for masonry, so every frame keeps its true aspect
+ratio rather than being cropped to a grid.
