@@ -1,7 +1,34 @@
 import path from "node:path";
+import os from "node:os";
 import type { NextConfig } from "next";
 
+/**
+ * Every LAN address this machine currently has.
+ *
+ * In development Next blocks cross-origin requests to its own dev-only
+ * assets, and "cross-origin" includes reaching the server on your LAN IP
+ * instead of localhost. When that happens the HMR client fails its
+ * handshake, the dev runtime never finishes booting, and the page renders
+ * but is completely dead - filters do nothing, photos do not open.
+ *
+ * Collecting the addresses here rather than hard-coding one means this keeps
+ * working when your router hands out a different IP.
+ */
+function localNetworkOrigins(): string[] {
+  const origins = new Set<string>([os.hostname(), `${os.hostname()}.local`]);
+  for (const iface of Object.values(os.networkInterfaces())) {
+    for (const net of iface ?? []) {
+      if (net.family === "IPv4" && !net.internal) origins.add(net.address);
+    }
+  }
+  return [...origins];
+}
+
 const nextConfig: NextConfig = {
+  // Lets you open the dev site from your phone or another machine on the
+  // network. Development only - it has no effect on a production build.
+  allowedDevOrigins: localNetworkOrigins(),
+
   // Pin the workspace root. Without this, Turbopack walks up looking for a
   // lockfile and finds the one in the home directory.
   turbopack: {
