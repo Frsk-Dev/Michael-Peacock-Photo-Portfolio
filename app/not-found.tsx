@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <section className="shell flex min-h-[70vh] flex-col justify-center py-32">
       <p className="eyebrow">Error 404</p>
-      <h1 className="display mt-5 text-6xl text-bone sm:text-7xl md:text-8xl">
+      <h1 className="display mt-5 text-[2.5rem] text-bone xs:text-6xl sm:text-7xl md:text-8xl">
         Off the
         <br />
         <span className="text-accent">racing line</span>

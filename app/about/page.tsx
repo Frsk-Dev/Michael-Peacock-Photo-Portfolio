@@ -16,7 +16,7 @@ export default function AboutPage() {
       <section className="shell pb-20 pt-32 md:pt-40">
         <header className="max-w-3xl">
           <p className="eyebrow">About</p>
-          <h1 className="display mt-5 text-5xl text-bone sm:text-6xl md:text-7xl">
+          <h1 className="display mt-5 text-[2.25rem] text-bone xs:text-5xl sm:text-6xl md:text-7xl">
             {about.heading}
           </h1>
         </header>

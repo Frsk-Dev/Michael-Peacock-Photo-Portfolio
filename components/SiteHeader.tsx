@@ -70,7 +70,7 @@ export default function SiteHeader() {
           <span className="font-display text-[15px] font-bold uppercase tracking-[0.18em] text-bone transition-colors group-hover:text-accent md:text-base">
             {site.name}
           </span>
-          <span className="mt-1 font-display text-[9px] font-semibold uppercase tracking-[0.3em] text-muted-2 md:text-[10px]">
+          <span className="mt-1 font-display text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2 sm:tracking-[0.3em] md:text-[11px]">
             {site.role}
           </span>
         </Link>

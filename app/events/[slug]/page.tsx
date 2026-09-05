@@ -43,14 +43,14 @@ export default async function EventPage({ params }: Params) {
     <section className="shell pb-24 pt-32 md:pt-40">
       <Link
         href="/events"
-        className="link-wipe font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
+        className="link-wipe inline-block py-2 font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
       >
         &larr; All events
       </Link>
 
       <header className="mt-8 max-w-4xl">
         <p className="eyebrow text-accent">{formatEventDate(album)}</p>
-        <h1 className="display mt-5 text-5xl text-bone sm:text-6xl md:text-7xl">
+        <h1 className="display mt-5 text-[2.25rem] text-bone xs:text-5xl sm:text-6xl md:text-7xl">
           {album.name}
         </h1>
 

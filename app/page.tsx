@@ -158,7 +158,7 @@ export default function HomePage() {
           {eventAlbums.length > 4 && (
             <Link
               href="/events"
-              className="link-wipe reveal font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
+              className="link-wipe reveal inline-block py-2 font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
             >
               All events &rarr;
             </Link>
@@ -186,7 +186,7 @@ export default function HomePage() {
             </div>
             <Link
               href="/work"
-              className="link-wipe reveal font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
+              className="link-wipe reveal inline-block py-2 font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
             >
               All photographs &rarr;
             </Link>

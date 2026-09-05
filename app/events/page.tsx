@@ -14,7 +14,7 @@ export default function EventsPage() {
     <section className="shell pb-24 pt-32 md:pt-40">
       <header className="max-w-3xl">
         <p className="eyebrow">Albums</p>
-        <h1 className="display mt-5 text-5xl text-bone sm:text-6xl md:text-7xl">
+        <h1 className="display mt-5 text-[2.25rem] text-bone xs:text-5xl sm:text-6xl md:text-7xl">
           Events
         </h1>
         <p className="mt-6 text-base leading-relaxed text-muted md:text-lg">

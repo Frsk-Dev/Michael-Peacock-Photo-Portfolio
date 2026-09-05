@@ -25,7 +25,7 @@ export default function SiteFooter() {
             </p>
             <a
               href={`mailto:${site.email}`}
-              className="link-wipe mt-7 inline-block text-base text-bone md:text-lg"
+              className="link-wipe mt-6 inline-block break-all py-1 text-base text-bone md:text-lg"
             >
               {site.email}
             </a>
@@ -44,7 +44,7 @@ export default function SiteFooter() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="link-wipe text-muted transition-colors hover:text-bone"
+                    className="link-wipe inline-block py-1.5 text-muted transition-colors hover:text-bone"
                   >
                     {l.label}
                   </Link>
@@ -63,7 +63,7 @@ export default function SiteFooter() {
                       href={href}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="link-wipe text-muted transition-colors hover:text-bone"
+                      className="link-wipe inline-block py-1.5 text-muted transition-colors hover:text-bone"
                     >
                       {socialLabels[key] ?? key}
                     </a>

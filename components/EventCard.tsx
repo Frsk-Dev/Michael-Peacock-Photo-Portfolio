@@ -30,7 +30,7 @@ export default function EventCard({
         />
         <span
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent transition-opacity duration-500 group-hover:opacity-95"
+          className="absolute inset-0 hidden bg-gradient-to-t from-ink via-ink/80 to-transparent transition-opacity duration-500 group-hover:opacity-95 sm:block"
         />
       </div>
 
@@ -42,13 +42,13 @@ export default function EventCard({
 
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-ink to-transparent sm:block"
       />
 
-      <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
+      <div className="p-5 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-6 md:p-7">
         <p className="eyebrow text-accent">{formatEventDate(album)}</p>
 
-        <h3 className="display mt-3 text-2xl text-bone sm:text-3xl">
+        <h3 className="display mt-2.5 text-xl text-bone xs:text-2xl sm:mt-3 sm:text-3xl">
           {album.name}
         </h3>
 

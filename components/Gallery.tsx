@@ -132,14 +132,14 @@ export default function Gallery({ photos, categories }: Props) {
 
       {/* Masonry grid - CSS columns keeps every frame at its true aspect ratio */}
       {visible.length ? (
-        <div className="columns-1 gap-4 sm:columns-2 md:gap-5 xl:columns-3">
+        <div className="columns-2 gap-2.5 sm:gap-4 md:gap-5 xl:columns-3">
           {visible.map((photo, i) => (
             <button
               key={photo.id}
               type="button"
               onClick={() => setLightboxIndex(i)}
               aria-label={`Open ${photoLabel(photo)} full screen`}
-              className="group relative mb-4 block w-full cursor-zoom-in break-inside-avoid overflow-hidden bg-surface md:mb-5"
+              className="group relative mb-2.5 block w-full cursor-zoom-in break-inside-avoid overflow-hidden bg-surface sm:mb-4 md:mb-5"
             >
               <Image
                 src={photo.src}

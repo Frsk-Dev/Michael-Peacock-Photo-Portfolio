@@ -21,7 +21,7 @@ export default function ContactPage() {
     <section className="shell pb-24 pt-32 md:pt-40">
       <header className="max-w-3xl">
         <p className="eyebrow">Contact</p>
-        <h1 className="display mt-5 text-5xl text-bone sm:text-6xl md:text-7xl">
+        <h1 className="display mt-5 text-[2.25rem] text-bone xs:text-5xl sm:text-6xl md:text-7xl">
           Start a<br />
           <span className="text-accent">conversation</span>
         </h1>
@@ -42,7 +42,7 @@ export default function ContactPage() {
             <p className="eyebrow">Direct</p>
             <a
               href={`mailto:${site.email}`}
-              className="link-wipe mt-4 block text-base text-bone"
+              className="link-wipe mt-4 block break-all py-1 text-base text-bone"
             >
               {site.email}
             </a>
@@ -74,7 +74,7 @@ export default function ContactPage() {
                       href={href}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="link-wipe text-base text-bone"
+                      className="link-wipe inline-block py-1.5 text-base text-bone"
                     >
                       {socialLabels[key] ?? key}
                     </a>

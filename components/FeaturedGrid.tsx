@@ -16,7 +16,7 @@ export default function FeaturedGrid({ photos }: { photos: Photo[] }) {
 
   return (
     <>
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+      <div className="mt-12 grid grid-cols-2 gap-2.5 sm:gap-4 md:gap-5 lg:grid-cols-3">
         {photos.map((photo, i) => (
           <button
             key={photo.id}
@@ -56,11 +56,11 @@ export default function FeaturedGrid({ photos }: { photos: Photo[] }) {
               </svg>
             </span>
 
-            <div className="absolute inset-x-0 bottom-0 p-5">
-              <p className="font-display text-[10px] uppercase tracking-[0.24em] text-accent">
+            <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
+              <p className="font-display text-[9px] uppercase tracking-[0.2em] text-accent sm:text-[10px] sm:tracking-[0.24em]">
                 {photo.category.replace("-", " ")}
               </p>
-              <h3 className="mt-2 font-display text-lg font-bold uppercase tracking-tight text-bone">
+              <h3 className="mt-1.5 font-display text-xs font-bold uppercase leading-tight tracking-tight text-bone sm:mt-2 sm:text-lg">
                 {photoLabel(photo)}
               </h3>
               {photo.location && (
