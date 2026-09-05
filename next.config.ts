@@ -25,6 +25,25 @@ function localNetworkOrigins(): string[] {
 }
 
 const nextConfig: NextConfig = {
+  /**
+   * Emits a self-contained server at .next/standalone with only the
+   * node_modules it actually needs. That is what gets deployed - it keeps the
+   * upload small and means the server does not need a full npm install to run.
+   */
+  output: "standalone",
+
+  /**
+   * Next traces which files the server needs and copies only those. It cannot
+   * follow sharp, because sharp resolves its native binary at runtime rather
+   * than through a static import - tracing ships its package.json and nothing
+   * else. Next then fails to load it and quietly serves unoptimised originals,
+   * so the site still works but every photo is ten times the size it should
+   * be. Naming it here makes sure the whole package comes along.
+   */
+  outputFileTracingIncludes: {
+    "/**": ["./node_modules/sharp/**/*", "./node_modules/@img/**/*"],
+  },
+
   // Lets you open the dev site from your phone or another machine on the
   // network. Development only - it has no effect on a production build.
   allowedDevOrigins: localNetworkOrigins(),
