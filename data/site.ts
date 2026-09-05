@@ -36,7 +36,15 @@ export const site = {
 
   about: {
     heading: "Behind the lens",
-    portrait: "/images/portrait.jpg",
+    /**
+     * The image beside the bio. This is one of your photographs, not a photo
+     * of you, so `portraitAlt` and `portraitCaption` describe what it actually
+     * shows. Swap in a picture of yourself and update both.
+     */
+    portrait: "/images/gallery/show/Gravity.2026-2.jpg",
+    portraitAlt:
+      "A black widebody 911 on gold wheels at Gravity 2026, framed past the back of a camera",
+    portraitCaption: "Gravity 2026",
     body: [
       "I photograph cars because they refuse to hold still. A drift car gives you a fraction of a second — sideways, half-hidden in its own tyre smoke, with the shot gone by the time you have heard it arrive. Getting it right is the whole appeal.",
       "The work splits three ways: drift action, show cars under hall lighting, and the close detail work — a harness, a wheel, a dressed engine bay — that says as much about a build as the whole car does.",

@@ -27,14 +27,14 @@ export default function AboutPage() {
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
               <Image
                 src={about.portrait}
-                alt={`${site.name}, ${site.role.toLowerCase()}`}
+                alt={about.portraitAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
                 className="object-cover"
               />
             </div>
             <p className="mt-4 font-display text-[10px] uppercase tracking-[0.24em] text-muted-2">
-              {site.name} — {site.location}
+              {about.portraitCaption}
             </p>
           </div>
 
