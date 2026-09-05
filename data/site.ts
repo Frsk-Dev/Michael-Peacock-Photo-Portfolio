@@ -28,7 +28,7 @@ export const site = {
   location: "United Kingdom",
   /** Leave a value blank to hide that link entirely. */
   socials: {
-    instagram: "https://instagram.com/",
+    instagram: "https://instagram.com/mikeee.mylens",
     x: "",
     linkedin: "",
     flickr: "",
