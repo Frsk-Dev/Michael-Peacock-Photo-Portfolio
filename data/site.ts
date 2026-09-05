@@ -16,7 +16,7 @@ export const site = {
   /** Shown on the home hero. Keep it to two short lines. */
   heroLines: ["Sideways,", "held still."],
   heroIntro:
-    "Drift action, show cars and close detail work from the UK car scene. Available for events, feature shoots and editorial licensing.",
+    "Drift action, show cars and close detail work from the UK car scene.",
 
   email: "michaelpeacock1993@gmail.com",
   phone: "",
