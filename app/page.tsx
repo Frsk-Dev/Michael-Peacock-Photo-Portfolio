@@ -143,56 +143,56 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------- Featured */}
+      {/* --------------------------------------------------------- Events */}
       <section className="shell py-20 md:py-28">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="eyebrow reveal">Selected work</p>
+            <p className="eyebrow reveal">Albums</p>
             <h2 className="display reveal mt-4 text-4xl text-bone sm:text-5xl md:text-6xl">
-              Recent frames
+              Events
             </h2>
+            <p className="reveal mt-5 max-w-md text-sm leading-relaxed text-muted">
+              Each show kept as its own album. Pick one to see the full set.
+            </p>
           </div>
-          <Link
-            href="/work"
-            className="link-wipe reveal font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
-          >
-            All photographs &rarr;
-          </Link>
+          {eventAlbums.length > 4 && (
+            <Link
+              href="/events"
+              className="link-wipe reveal font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
+            >
+              All events &rarr;
+            </Link>
+          )}
         </div>
 
-        <FeaturedGrid photos={grid} />
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 md:gap-6">
+          {eventAlbums.slice(0, 4).map((album, i) => (
+            <div key={album.slug} className="reveal" data-reveal-delay={i * 80}>
+              <EventCard album={album} />
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* --------------------------------------------------------- Events */}
+      {/* ------------------------------------------------------- Featured */}
       <section className="border-t border-line bg-ink-2">
         <div className="shell py-20 md:py-28">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="eyebrow reveal">Albums</p>
+              <p className="eyebrow reveal">Selected work</p>
               <h2 className="display reveal mt-4 text-4xl text-bone sm:text-5xl md:text-6xl">
-                Events
+                Recent frames
               </h2>
-              <p className="reveal mt-5 max-w-md text-sm leading-relaxed text-muted">
-                Each show kept as its own album. Pick one to see the full set.
-              </p>
             </div>
-            {eventAlbums.length > 4 && (
-              <Link
-                href="/events"
-                className="link-wipe reveal font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
-              >
-                All events &rarr;
-              </Link>
-            )}
+            <Link
+              href="/work"
+              className="link-wipe reveal font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone"
+            >
+              All photographs &rarr;
+            </Link>
           </div>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 md:gap-6">
-            {eventAlbums.slice(0, 4).map((album, i) => (
-              <div key={album.slug} className="reveal" data-reveal-delay={i * 80}>
-                <EventCard album={album} />
-              </div>
-            ))}
-          </div>
+          <FeaturedGrid photos={grid} />
         </div>
       </section>
 
