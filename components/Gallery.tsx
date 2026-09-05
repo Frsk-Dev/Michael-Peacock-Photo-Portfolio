@@ -14,9 +14,14 @@ type Filter = Category | "all";
 
 interface Props {
   photos: Photo[];
+  /**
+   * Which filters to offer. Defaults to every category that has photos
+   * site-wide; an event album passes just the ones in that album.
+   */
+  categories?: { id: Category; label: string }[];
 }
 
-export default function Gallery({ photos }: Props) {
+export default function Gallery({ photos, categories }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -55,10 +60,14 @@ export default function Gallery({ photos }: Props) {
       setFilter(hash);
   }, []);
 
+  const available = categories ?? activeCategories;
   const filters: { id: Filter; label: string }[] = [
     { id: "all", label: "All" },
-    ...activeCategories,
+    ...available,
   ];
+
+  // One category is not a choice, so do not show a filter bar for it.
+  const showFilters = available.length > 1;
 
   return (
     <>
@@ -66,7 +75,10 @@ export default function Gallery({ photos }: Props) {
       <div ref={topRef} className="scroll-mt-32" aria-hidden />
 
       {/* Filter bar - deliberately not sticky, so it stays put as you scroll */}
-      <div className="mb-10 border-y border-line/70">
+      <div
+        className="mb-10 border-y border-line/70"
+        hidden={!showFilters}
+      >
         <div
           role="tablist"
           aria-label="Filter photographs by discipline"
@@ -102,7 +114,10 @@ export default function Gallery({ photos }: Props) {
       </div>
 
       {/* Result count, so a filter always gives visible feedback */}
-      <p className="mb-6 text-xs uppercase tracking-[0.16em] text-muted-2">
+      <p
+        className="mb-6 text-xs uppercase tracking-[0.16em] text-muted-2"
+        hidden={!showFilters}
+      >
         Showing {visible.length}{" "}
         {visible.length === 1 ? "photograph" : "photographs"}
         {filter !== "all" && (

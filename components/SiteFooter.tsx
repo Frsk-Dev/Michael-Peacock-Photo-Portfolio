@@ -37,6 +37,7 @@ export default function SiteFooter() {
               {[
                 { href: "/", label: "Home" },
                 { href: "/work", label: "Work" },
+                { href: "/events", label: "Events" },
                 { href: "/about", label: "About" },
                 { href: "/contact", label: "Contact" },
               ].map((l) => (

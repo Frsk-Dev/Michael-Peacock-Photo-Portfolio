@@ -46,6 +46,10 @@ export interface Photo {
   category: Category;
   event?: string;
   location?: string;
+  /** Driver or team, taken from the source sub-folder at import time. */
+  driver?: string;
+  /** Capture date from EXIF, ISO yyyy-mm-dd. Orders the events on the site. */
+  date?: string;
   year?: number;
   /** Tiny base64 image used as the blur-up placeholder. */
   blurDataURL?: string;

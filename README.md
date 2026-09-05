@@ -10,83 +10,109 @@ npm run start   # serve the production build
 
 ---
 
-## Adding your photographs
+## Adding a new event
 
-This is the part you will use most. The current gallery holds 83 frames from
-Gravity 2026, imported from `D:/photos/ThroughMyLens/Gravity 2026/Keep/`.
-
-### The one command
+One command. The album page, the home page card, the `/events` entry and the
+route all appear on their own.
 
 ```bash
-npm run import-photos -- --from "D:/path/to/your/photos" --category drift --event "Event Name 2026"
+npm run import-photos -- --from "D:/photos/ThroughMyLens/YourEvent/Drift" --category drift --event "Your Event 2026"
 ```
 
-That copies the images in, **resizes them to 2560px on the long edge** (your
-24MP originals are ~15MB each; the web copies come out around 400KB and your
-originals are never touched), reads the EXIF for the camera settings line,
-generates the blurred preview that fades in while the full photo loads, and
-updates `data/photos.json`.
+That copies the images in, **resizes them to 2560px on the long edge** (24MP
+originals are ~15MB each; web copies land around 350KB and your originals are
+never touched), reads EXIF for the camera settings and the capture date, builds
+the blurred preview that fades in while the full photo loads, and updates
+`data/photos.json`.
 
-Categories: `drift`, `show`, `detail`, and `circuit`, `rally`, `endurance`,
-`pit-lane`, `portrait` are defined ready for future work — **a filter only
-appears on the site once it has photos in it**, so the unused ones stay hidden.
+**Events are derived from the `event` field** — there is no separate list to
+maintain. They sort newest-first by the EXIF capture date of their newest
+photo, so a new shoot goes straight to the top.
+
+### Driver and team names
+
+If your source folder is split into sub-folders, each sub-folder name is
+recorded as that photo's `driver`:
+
+```
+lzworldTOUR/Drift/
+  Adam LZ/         -> driver: "Adam LZ"
+  James Deane/     -> driver: "James Deane"
+  Driftworks/      -> driver: "Driftworks"
+  LZWorldTour-63.jpg   (loose files get no driver)
+```
+
+Capitalisation is tidied (`adam lz` becomes `Adam LZ`) but **spelling is left
+exactly as you typed it**. Those names drive the "Drivers & teams" list on the
+album page and the alt text. Fix any you do not like in `data/photos.json`;
+re-runs keep your version.
+
+Categories: `drift`, `show`, `detail`, plus `circuit`, `rally`, `endurance`,
+`pit-lane`, `portrait` ready for future work — **a filter only appears once it
+has photos**, and an album with a single category shows no filter bar at all.
 
 Useful flags:
 
 | Flag | What it does |
 | --- | --- |
 | `--from <dir>` | Copy images in from this folder |
-| `--category <id>` | Category for the imported set (also picks the sub-folder) |
-| `--event "Name"` | Stamp an event name on the new photos |
-| `--location "Place"` | Stamp a location on the new photos |
+| `--category <id>` | Category for the imported set |
+| `--event "Name"` | Event name — this is what creates the album |
+| `--location "Place"` | Optional location, shown on the album |
 | `--max-edge 2560` | Longest edge of the web copies |
 | `--quality 82` | JPEG quality of the web copies |
 | `--no-resize` | Copy originals through untouched |
 | `--force` | Reset all metadata to the derived defaults |
 
-Running it with no flags just rescans `public/images/gallery/` and rebuilds
-the manifest.
+Running it with no flags rescans `public/images/gallery/` and rebuilds the
+manifest. **It never overwrites your edits**, and never reorders the file.
 
-**It never overwrites your edits.** Once you have written a title or caption
-for a photo, re-running the importer keeps it.
+### How the pages relate
+
+- **`/work`** — every photograph from every event together, filtered by
+  discipline. 
+- **`/events`** — one card per show.
+- **`/events/<slug>`** — that show only, with its own filters and lightbox.
+- **Home** — hero, a selected-frames grid, then the event cards.
 
 ### Naming frames
 
-Photos are labelled with their **event name** by default. Nothing is
-auto-generated from filenames, so you never get "Gravity 2026 15" as a caption.
+Photos are labelled with their **event name**. Nothing is generated from
+filenames, so you never get "Gravity 2026 15" as a caption.
 
 A typical entry in `data/photos.json`:
 
 ```json
 {
-  "id": "gravity-2026-26",
-  "src": "/images/gallery/drift/Gravity.2026-26.jpg",
+  "id": "lzworldtour-61",
+  "src": "/images/gallery/drift/LZWorldTour-61.jpg",
   "width": 2560,
-  "height": 1368,
-  "alt": "A drift car laying down heavy smoke in front of a packed crowd, Gravity 2026",
+  "height": 1484,
+  "alt": "Axle Turbo drifting at AdamLZ World Tour 2026",
   "category": "drift",
-  "event": "Gravity 2026",
+  "event": "AdamLZ World Tour 2026",
+  "driver": "Axle Turbo",
+  "date": "2026-09-04",
   "year": 2026,
   "featured": true,
-  "settings": "359mm · f/16 · 1/60s · ISO 125",
+  "settings": "150mm · f/8 · 1/200s · ISO 400",
   "blurDataURL": "data:image/jpeg;base64,..."
 }
 ```
 
-- `event` — what appears on the tile and in the viewer
-- `location` — optional; shown beside the event if you set it
+- `event` — what appears on the tile and in the viewer, and which album it joins
+- `date` — from EXIF; orders the events
+- `driver` — from the source sub-folder; listed on the album page
 - `title` — **optional**. Leave it out and the frame shows its event name.
-  Add one only for a shot worth naming individually, and that name is used
-  instead.
-- `category` — moves the photo between filters
 - `featured: true` — puts it on the home page. **The first featured photo in
   the file is the hero image**, which is why the importer never reorders the
-  manifest: it keeps your order and appends new frames at the end.
-- `alt` — worth writing properly; it is what screen readers and Google read
-- `settings` — read from EXIF and kept in the file, but **not displayed
-  anywhere**. To show it again, add it back to the caption block in
-  `components/Lightbox.tsx`.
+  manifest.
+- `settings` — read from EXIF and kept, but **not displayed**. To show it
+  again, add it back to the caption block in `components/Lightbox.tsx`.
 - `id`, `src`, `width`, `height`, `blurDataURL` — leave these to the importer
+
+Per-event copy (a blurb, a location, a hand-picked cover) goes in
+`data/events.ts` under `eventDetails`.
 
 ## Changing the words
 
@@ -135,7 +161,9 @@ social share previews use the right address.
 ```
 app/
   layout.tsx          fonts, metadata, header/footer, structured data
-  page.tsx            home — hero, statement, featured grid, services
+  page.tsx            home — hero, statement, featured grid, events, services
+  events/page.tsx     one card per show
+  events/[slug]/      a single event album
   work/page.tsx       the portfolio
   about/page.tsx      bio, facts, gear
   contact/page.tsx    form and details
@@ -143,6 +171,7 @@ app/
   globals.css         design tokens and shared styles
 components/
   SiteHeader          nav, mobile menu
+  EventCard           album thumbnail
   SiteFooter
   Gallery             filtering and the masonry grid
   Lightbox            full-screen viewer
@@ -150,6 +179,7 @@ components/
   RevealProvider      scroll-in animations
 data/
   site.ts             all site copy and config
+  events.ts           albums derived from the photo manifest
   photos.json         the photo manifest (generated, hand-editable)
   photos.ts           types, categories and helpers
 scripts/

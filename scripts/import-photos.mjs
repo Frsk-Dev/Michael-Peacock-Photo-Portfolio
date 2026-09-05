@@ -62,6 +62,8 @@ const EDITABLE = [
   "category",
   "event",
   "location",
+  "driver",
+  "date",
   "year",
   "featured",
   "settings",
@@ -111,6 +113,42 @@ function parseArgs(argv) {
 }
 
 // ---------------------------------------------------------------- helpers
+
+/**
+ * "adam lz" -> "Adam LZ", "jc-r32" -> "JC R32".
+ * Folder names are typed in a hurry, so this only fixes capitalisation and
+ * separators. Spelling stays exactly as you wrote it - correct anything you
+ * do not like in data/photos.json and re-runs will keep your version.
+ */
+const ALL_CAPS = new Set([
+  "lz", "hg", "hgs", "bmw", "jc", "gt", "gtr", "rx7", "r32", "r33", "r34",
+  "s13", "s14", "s15", "ae86", "uk", "usa", "e36", "e46", "e92", "m3", "m4",
+]);
+function tidyName(raw) {
+  return raw
+    .replace(/[._]+/g, " ")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .map((w) =>
+      ALL_CAPS.has(w.toLowerCase())
+        ? w.toUpperCase()
+        : w.charAt(0).toUpperCase() + w.slice(1),
+    )
+    .join(" ");
+}
+
+/**
+ * Default alt text. Uses the driver when the source folders gave us one,
+ * because "Adam LZ drifting at AdamLZ World Tour 2026" is worth far more to
+ * a screen reader and to search than a generic line.
+ */
+function buildAlt(driver, event) {
+  if (driver && event) return `${driver} drifting at ${event}`;
+  if (event) return `${event} - motorsport photograph by Michael Peacock`;
+  return "Motorsport photograph by Michael Peacock";
+}
 
 /** Pull a 4-digit year out of a filename or folder path, if one is there. */
 function yearFrom(str) {
@@ -185,17 +223,27 @@ function settingsFromExif(exifBuffer) {
   return parts.length ? parts.join(" · ") : undefined;
 }
 
-/** The date the shutter actually fired, for the year field. */
-function yearFromExif(exifBuffer) {
-  if (!exifBuffer) return undefined;
+/**
+ * When the shutter actually fired, as { date: "2026-09-04", year: 2026 }.
+ * The date is what orders events on the site, so newest shows come first
+ * without anyone maintaining a list by hand.
+ */
+function captureDateFromExif(exifBuffer) {
+  if (!exifBuffer) return {};
   try {
     const tags = exifReader(exifBuffer);
     const d = tags?.Photo?.DateTimeOriginal ?? tags?.Image?.DateTime;
-    if (d instanceof Date && !Number.isNaN(d.valueOf())) return d.getFullYear();
+    if (d instanceof Date && !Number.isNaN(d.valueOf())) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return {
+        date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+        year: d.getFullYear(),
+      };
+    }
   } catch {
     /* no usable date */
   }
-  return undefined;
+  return {};
 }
 
 // ---------------------------------------------------------------- copy-in
@@ -220,6 +268,11 @@ async function copyFrom(srcDir, args) {
   // Claimed within this run, so two sources never fight over one destination.
   const claimed = new Set();
 
+  // Gallery-relative path -> the source sub-folder it came out of. Photographers
+  // tend to sort a shoot into folders per driver or team, and that name is real
+  // information worth keeping rather than flattening away.
+  const drivers = new Map();
+
   for (const file of files) {
     // Web copies are always JPEG. Only .jpg passes its name through unchanged:
     // anything else gets its original extension folded into the name, so
@@ -236,6 +289,12 @@ async function copyFrom(srcDir, args) {
     claimed.add(destName.toLowerCase());
 
     const dest = path.join(target, destName);
+
+    // Sub-folder directly under the source root, if the file was in one.
+    const rel = path.relative(resolved, file).split(path.sep);
+    if (rel.length > 1) {
+      drivers.set(path.relative(GALLERY_DIR, dest), tidyName(rel[0]));
+    }
 
     try {
       await fs.access(dest);
@@ -278,6 +337,13 @@ async function copyFrom(srcDir, args) {
       `    ${mb(bytesIn)} of originals -> ${mb(bytesOut)} on disk (max ${args.maxEdge}px, q${args.quality})`,
     );
   }
+  if (drivers.size) {
+    const names = [...new Set(drivers.values())];
+    console.log(
+      `    ${names.length} source sub-folders recorded as drivers: ${names.slice(0, 6).join(", ")}${names.length > 6 ? ", ..." : ""}`,
+    );
+  }
+  return drivers;
 }
 
 // ---------------------------------------------------------------- main
@@ -287,9 +353,11 @@ async function main() {
 
   await fs.mkdir(GALLERY_DIR, { recursive: true });
 
+  // Gallery-relative path -> driver name, for anything copied in this run.
+  let drivers = new Map();
   if (args.from) {
     console.log(`\n  Importing from ${args.from}`);
-    await copyFrom(args.from, args);
+    drivers = await copyFrom(args.from, args);
   }
 
   // Load whatever metadata already exists so we never clobber your edits.
@@ -357,9 +425,7 @@ async function main() {
       // No title is generated on purpose. A frame with no title is labelled
       // with its event, which beats "Gravity 2026 15". Add titles by hand in
       // data/photos.json for the shots that deserve one.
-      alt: args.event
-        ? `${args.event} - motorsport photograph by Michael Peacock`
-        : `Motorsport photograph by Michael Peacock`,
+      alt: buildAlt(drivers.get(rel.join(path.sep)), args.event),
       category:
         folder && CATEGORY_IDS.includes(folder) ? folder : DEFAULT_CATEGORY,
       blurDataURL: await blurPlaceholder(file),
@@ -368,9 +434,14 @@ async function main() {
     const settings = settingsFromExif(meta.exif);
     if (settings) photo.settings = settings;
 
-    const year =
-      yearFromExif(meta.exif) ?? yearFrom(base) ?? yearFrom(rel.join("/"));
+    const shot = captureDateFromExif(meta.exif);
+    if (shot.date) photo.date = shot.date;
+
+    const year = shot.year ?? yearFrom(base) ?? yearFrom(rel.join("/"));
     if (year) photo.year = year;
+
+    const driver = drivers.get(rel.join(path.sep));
+    if (driver) photo.driver = driver;
 
     // Stamp event/location on anything new, when the flags were given.
     if (!prev) {
