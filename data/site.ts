@@ -12,8 +12,12 @@ export const site = {
   name: "Michael Peacock",
   /** A description of the subject, not a job title. */
   role: "Motorsport Photography",
-  /** Used in <title>, Open Graph and the JSON-LD block. Set this to your real domain. */
-  url: "https://michaelpeacock.photo",
+  /**
+   * The canonical address of the site. Open Graph needs absolute URLs, so
+   * this is what social previews resolve their image against - if it is wrong,
+   * shared links show no thumbnail at all. No trailing slash, no www.
+   */
+  url: "https://michaelpeacock.uk",
   tagline: "Drifting, show cars and the people around them",
   description:
     "Drift and car culture photography from UK events by Michael Peacock. A self-taught portfolio, still being built.",
