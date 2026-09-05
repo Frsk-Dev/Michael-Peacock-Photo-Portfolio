@@ -120,7 +120,7 @@ export default function HomePage() {
             <p className="display reveal text-2xl leading-[1.15] text-bone sm:text-3xl md:text-[2.6rem]">
               A car at full lock gives you one frame, and it is gone. I shoot
               for the one that carries the <span className="text-accent">smoke,
-              the light and the noise</span> — and holds up printed a metre wide.
+              the light and the noise</span>.
             </p>
 
             <dl className="reveal mt-14 grid grid-cols-2 gap-8 sm:grid-cols-3">
