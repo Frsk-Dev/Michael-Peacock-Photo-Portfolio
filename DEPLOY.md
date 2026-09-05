@@ -28,84 +28,50 @@ npm run build:deploy -- --libc musl
 
 ---
 
-## Can this run on Pterodactyl?
+## Recommended: straight on the VPS
 
-Yes, but understand what Pterodactyl is first: it is a **game server panel**.
-It runs your app in a container and gives you an `IP:PORT` allocation. It has
-no concept of domains, and it will not give you HTTPS. Everything below is
-about bridging that gap.
+You have root, so this is the shortest path — and it gets you HTTPS on your
+own domain automatically. Pterodactyl is not involved.
 
-If you have **root on the VPS**, you almost certainly do not want Pterodactyl
-for this — see "Straight on the VPS" further down. It is less setup, not more.
+### 1. Point the domain at the server
 
-### Running it on a Pterodactyl instance
+At whichever registrar holds the domain, add an A record:
 
-1. **Create a server using a generic Node.js egg** (the "NodeJS Generic" egg,
-   or any egg with Node 20+). Give it at least **1GB RAM** and enough disk for
-   the bundle.
+| Type | Name | Value |
+| --- | --- | --- |
+| A | `@` | your VPS IP |
+| A | `www` | your VPS IP |
 
-2. **Upload the `deploy` folder over SFTP.** Pterodactyl exposes SFTP on the
-   panel's connection details — use FileZilla or WinSCP rather than the web
-   file manager, which struggles with this many files. Put the *contents* of
-   `deploy/` into `/home/container`, so `server.js` sits at the top level.
+You do not need Cloudflare. Caddy will get the certificate directly from
+Let's Encrypt. DNS usually propagates in minutes; check with
+`nslookup yourdomain.com` before moving on, because Caddy cannot issue a
+certificate until the domain resolves to the server.
 
-3. **Set the startup command** to:
-
-   ```
-   node server.js
-   ```
-
-   Pterodactyl sets `SERVER_PORT` and `SERVER_IP` for you, and Next reads
-   `PORT` and `HOSTNAME`, so map them in the egg's startup variables — or use
-   the included script instead, which does the translation:
-
-   ```
-   ./start.sh
-   ```
-
-4. **Check the allocation.** The port Pterodactyl assigned is the port the
-   site answers on. At this point `http://<ip>:<port>` should load.
-
-### Getting a domain and HTTPS onto it
-
-This is the part Pterodactyl does not do for you. Pick one:
-
-**Cloudflare Tunnel — best option if you do not control the host.**
-Works from any port, gives you HTTPS and a real domain, and nothing needs to
-be exposed to the internet. Install `cloudflared` on the machine (or as a
-second Pterodactyl server), point it at your allocation, and map the hostname
-in the Cloudflare dashboard. Free.
-
-**Cloudflare proxy (orange cloud).** Only works if your allocated port happens
-to be one Cloudflare proxies — `8080`, `8880`, `2052`, `2082`, `2086`, `2095`
-for HTTP. If your panel let you choose the port, ask for `8080`. If not, use a
-tunnel instead.
-
-**Reverse proxy on the host.** If you own the box, put nginx or Caddy in front
-and terminate TLS there. Caddy gets you a certificate automatically:
-
-```
-michaelpeacock.photo {
-    reverse_proxy localhost:PORT
-}
-```
-
----
-
-## Straight on the VPS (simpler, if you have root)
-
-Skip Pterodactyl entirely.
+### 2. Install what is needed
 
 ```bash
-# on the server, once
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs caddy
-mkdir -p /var/www/peacock
-
-# from your machine, each deploy
-scp -r deploy/* user@server:/var/www/peacock/
+sudo mkdir -p /var/www/peacock
+sudo chown -R $USER:$USER /var/www/peacock
+sudo ufw allow 80,443/tcp
 ```
 
-Then a systemd unit at `/etc/systemd/system/peacock.service`:
+### 3. Upload the bundle
+
+From your machine, in the project folder (PowerShell has `scp` built in):
+
+```bash
+npm run build:deploy
+scp -r deploy/* user@YOUR_SERVER_IP:/var/www/peacock/
+```
+
+It is ~139MB, so the first upload takes a few minutes. Later deploys are
+faster if you only send what changed.
+
+### 4. Run it as a service
+
+`/etc/systemd/system/peacock.service`:
 
 ```ini
 [Unit]
@@ -120,6 +86,7 @@ Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=127.0.0.1
 Restart=always
+RestartSec=5
 User=www-data
 
 [Install]
@@ -127,20 +94,63 @@ WantedBy=multi-user.target
 ```
 
 ```bash
+sudo chown -R www-data:www-data /var/www/peacock
+sudo systemctl daemon-reload
 sudo systemctl enable --now peacock
+sudo systemctl status peacock      # should say active (running)
 ```
 
-And a `Caddyfile`:
+`HOSTNAME=127.0.0.1` binds it to localhost only, so the app is reachable
+solely through Caddy — nobody can hit it on port 3000 directly.
+
+### 5. Put Caddy in front
+
+`/etc/caddy/Caddyfile`:
 
 ```
-michaelpeacock.photo {
+yourdomain.com, www.yourdomain.com {
+    encode zstd gzip
     reverse_proxy 127.0.0.1:3000
 }
 ```
 
-Caddy handles the certificate on its own. That is the whole deployment.
+```bash
+sudo systemctl reload caddy
+```
+
+That is it. Caddy requests the certificate on first request and renews it
+forever. `https://yourdomain.com` should now serve the site.
+
+### Troubleshooting
+
+```bash
+sudo journalctl -u peacock -f     # app logs
+sudo journalctl -u caddy -f       # certificate / proxy logs
+curl -I localhost:3000            # is the app itself up?
+```
 
 ---
+
+## If you would rather run it through Pterodactyl
+
+It works, and it is a fair choice if you already manage everything else in
+that panel. Understand what it does and does not give you: Pterodactyl runs
+the app in a container and hands you an `IP:PORT` allocation. It has no
+concept of domains and will not give you HTTPS — you still need Caddy in
+front, exactly as above, just pointing at the allocation port instead of 3000.
+
+1. Create a server on a generic Node.js egg (Node 20+), at least 1GB RAM.
+2. SFTP the *contents* of `deploy/` into `/home/container`, so `server.js`
+   sits at the top level. Use FileZilla or WinSCP — the web file manager
+   struggles with this many files.
+3. Set the startup command to `./start.sh`, which reads Pterodactyl's
+   `SERVER_PORT` and `SERVER_IP` and passes them to Next.
+4. Point Caddy at `127.0.0.1:<allocation port>`.
+
+The only real cost is the extra layer: a container boundary, a panel to click
+through, and Pterodactyl's own resource limits sitting between you and a
+process that just needs to run. For a website, systemd does the same job with
+less in the way.
 
 ## The contact form
 
