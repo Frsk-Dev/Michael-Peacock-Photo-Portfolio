@@ -27,7 +27,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     openGraph: {
       title: `${album.name} — ${site.name}`,
       description: `${album.count} photographs from ${album.name}.`,
-      images: [{ url: album.cover.src }],
+      // Purpose-built 1.91:1 card from scripts/make-og-image.mjs, not the raw
+      // cover photograph - that is the wrong shape for a preview and large
+      // enough that WhatsApp often declines to fetch it.
+      images: [
+        {
+          url: `/og/${album.slug}.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `${album.name} — photographs by ${site.name}`,
+        },
+      ],
     },
   };
 }
