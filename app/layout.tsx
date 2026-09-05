@@ -61,12 +61,15 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-/** Structured data so search engines understand who this site belongs to. */
+/**
+ * Structured data so search engines understand who this site belongs to.
+ * Deliberately no `jobTitle` - that asserts an occupation to Google, and
+ * this is a personal portfolio rather than a business.
+ */
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: site.name,
-  jobTitle: site.role,
   description: site.description,
   url: site.url,
   email: site.email || undefined,

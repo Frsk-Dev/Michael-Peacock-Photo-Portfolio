@@ -5,7 +5,7 @@ import { site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `About ${site.name}, ${site.role.toLowerCase()} based in ${site.location}.`,
+  description: `About ${site.name} — a self-taught motorsport photography portfolio from ${site.location}.`,
 };
 
 export default function AboutPage() {
@@ -71,7 +71,8 @@ export default function AboutPage() {
             <p className="eyebrow reveal">In the bag</p>
             <p className="reveal mt-5 max-w-xs text-sm leading-relaxed text-muted">
               One body, two lenses. A standard zoom for the show floor and the
-              detail work, and the long end for the bale line.
+              detail work, and the long end for whatever is happening on the far
+              side of the fence.
             </p>
           </div>
           <div className="md:col-span-8">

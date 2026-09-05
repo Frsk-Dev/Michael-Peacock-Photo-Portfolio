@@ -4,7 +4,7 @@ import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Enquire about race weekend coverage, commissions and licensing with ${site.name}.`,
+  description: `Get in touch with ${site.name} about photographs from an event, or an event worth shooting.`,
 };
 
 const socialLabels: Record<string, string> = {
@@ -26,8 +26,9 @@ export default function ContactPage() {
           <span className="text-accent">conversation</span>
         </h1>
         <p className="mt-6 text-base leading-relaxed text-muted md:text-lg">
-          Drift days, shows, feature cars and licensing. Tell me what you need
-          and when, and I will come back to you with availability and a quote.
+          If your car is in one of the albums and you want the full-resolution
+          files, or you know of an event worth shooting, get in touch. I read
+          everything that comes in.
         </p>
       </header>
 
@@ -59,7 +60,7 @@ export default function ContactPage() {
             <p className="eyebrow">Based in</p>
             <p className="mt-4 text-base text-bone">{site.location}</p>
             <p className="mt-2 text-sm text-muted">
-              Travelling across the UK for events and feature shoots.
+              Getting to UK events when I can.
             </p>
           </div>
 
@@ -84,10 +85,10 @@ export default function ContactPage() {
           )}
 
           <div className="mt-10 border-t border-line pt-6">
-            <p className="eyebrow">Response time</p>
+            <p className="eyebrow">Replies</p>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              Usually within two working days. During an event weekend it may be
-              the Monday after.
+              This is not a full-time thing, so it may take me a few days to
+              get back to you.
             </p>
           </div>
         </aside>

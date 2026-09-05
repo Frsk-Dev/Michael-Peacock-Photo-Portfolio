@@ -6,10 +6,9 @@ import { site } from "@/data/site";
 type Status = "idle" | "sending" | "sent" | "error";
 
 const enquiryTypes = [
-  "Race weekend coverage",
-  "Team or driver commission",
-  "Editorial licensing",
-  "Print enquiry",
+  "Photos of my car",
+  "An event worth shooting",
+  "Just saying hello",
   "Something else",
 ];
 
@@ -57,8 +56,8 @@ export default function ContactForm() {
           Message sent
         </p>
         <p className="mt-4 text-base leading-relaxed text-muted">
-          Thanks for getting in touch — I will come back to you within a couple
-          of days. If it is urgent, email{" "}
+          Thanks for getting in touch — I will reply when I can. If it is
+          urgent, email{" "}
           <a href={`mailto:${site.email}`} className="link-wipe text-bone">
             {site.email}
           </a>
@@ -118,7 +117,7 @@ export default function ContactForm() {
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label className={label} htmlFor="type">
-            Enquiry
+            About
           </label>
           <select
             id="type"
@@ -134,13 +133,14 @@ export default function ContactForm() {
           </select>
         </div>
         <div>
-          <label className={label} htmlFor="date">
-            Date (if known)
+          <label className={label} htmlFor="event">
+            Event (if relevant)
           </label>
           <input
-            id="date"
-            name="date"
-            type="date"
+            id="event"
+            name="event"
+            maxLength={120}
+            placeholder="e.g. AdamLZ World Tour 2026"
             className={`${field} mt-3`}
           />
         </div>
@@ -156,7 +156,7 @@ export default function ContactForm() {
           required
           rows={6}
           maxLength={4000}
-          placeholder="Series, circuit, dates, what you need from the shoot…"
+          placeholder="Which event, which car, or whatever else is on your mind…"
           className={`${field} mt-3 resize-y`}
         />
       </div>
@@ -183,7 +183,7 @@ export default function ContactForm() {
           disabled={status === "sending"}
           className="group flex items-center gap-3 bg-bone px-8 py-4 font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-ink transition-colors duration-300 hover:bg-accent hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {status === "sending" ? "Sending…" : "Send enquiry"}
+          {status === "sending" ? "Sending…" : "Send message"}
           {status !== "sending" && (
             <span
               aria-hidden

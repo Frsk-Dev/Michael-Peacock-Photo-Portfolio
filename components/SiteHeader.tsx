@@ -95,7 +95,7 @@ export default function SiteHeader() {
             href="/contact"
             className="border border-line px-4 py-2 font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-bone transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-white"
           >
-            Enquire
+            Say hello
           </Link>
         </nav>
 

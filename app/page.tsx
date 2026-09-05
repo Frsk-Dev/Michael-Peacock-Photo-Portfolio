@@ -90,7 +90,7 @@ export default function HomePage() {
                 href="/contact"
                 className="border border-line px-7 py-4 font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-bone transition-colors duration-300 hover:border-bone"
               >
-                Enquire
+                Get in touch
               </Link>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
             <dl className="reveal mt-14 grid grid-cols-2 gap-8 sm:grid-cols-3">
               {[
                 { n: `${photos.length}`, l: "Frames in the gallery" },
-                { n: `${eventAlbums.length}`, l: "Events covered" },
+                { n: `${eventAlbums.length}`, l: "Events shot" },
                 { n: latestEvent, l: "Most recent shoot" },
               ].map((s) => (
                 <div key={s.l} className="border-t border-line pt-4">
@@ -199,7 +199,7 @@ export default function HomePage() {
       {/* ------------------------------------------------------- Services */}
       <section className="border-t border-line bg-ink-2">
         <div className="shell py-20 md:py-28">
-          <p className="eyebrow reveal">What I do</p>
+          <p className="eyebrow reveal">Where this is at</p>
           <div className="mt-12 grid gap-px overflow-hidden border border-line bg-line md:grid-cols-3">
             {site.services.map((s, i) => (
               <div

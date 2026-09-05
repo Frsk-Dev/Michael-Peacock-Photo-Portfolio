@@ -17,11 +17,11 @@ export default function SiteFooter() {
       <div className="shell py-16 md:py-20">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
-            <p className="eyebrow">Available for commissions</p>
+            <p className="eyebrow">Say hello</p>
             <p className="display mt-5 text-3xl text-bone sm:text-4xl md:text-5xl">
-              Let us talk
+              Get in
               <br />
-              about your <span className="text-accent">event</span>
+              <span className="text-accent">touch</span>
             </p>
             <a
               href={`mailto:${site.email}`}

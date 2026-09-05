@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   const email = clean(payload.email, 200);
   const message = clean(payload.message, 4000);
   const type = clean(payload.type, 100) || "Enquiry";
-  const date = clean(payload.date, 40);
+  const eventName = clean(payload.event, 120);
 
   if (!name || !email || !message) {
     return NextResponse.json(
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
     `Name:    ${name}`,
     `Email:   ${email}`,
     `Enquiry: ${type}`,
-    date ? `Date:    ${date}` : null,
+    eventName ? `Event:   ${eventName}` : null,
     "",
     message,
   ].filter(Boolean);
