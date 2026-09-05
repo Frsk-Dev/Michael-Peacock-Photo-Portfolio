@@ -26,6 +26,14 @@ function localNetworkOrigins(): string[] {
 
 const nextConfig: NextConfig = {
   /**
+   * Next writes AI agent rule files into the project root on every
+   * `next dev`. Off - they are not wanted in this repository, and without
+   * this they reappear as an uncommitted change every time the dev server
+   * starts.
+   */
+  agentRules: false,
+
+  /**
    * Emits a self-contained server at .next/standalone with only the
    * node_modules it actually needs. That is what gets deployed - it keeps the
    * upload small and means the server does not need a full npm install to run.
