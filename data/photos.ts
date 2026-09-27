@@ -18,12 +18,13 @@ import raw from "./photos.json";
 
 export const CATEGORY_IDS = [
   "drift",
-  "show",
-  "detail",
   "circuit",
+  "autograss",
+  "show",
+  "paddock",
+  "detail",
   "rally",
   "endurance",
-  "pit-lane",
   "portrait",
 ] as const;
 
@@ -61,14 +62,16 @@ export interface Photo {
 
 /** Filter buttons, in display order. "All" is added by the gallery. */
 export const categories: { id: Category; label: string }[] = [
+  // Action first, then the static and behind-the-scenes work.
   { id: "drift", label: "Drift" },
+  { id: "circuit", label: "Circuit" },
+  { id: "autograss", label: "Autograss" },
   { id: "show", label: "Show Cars" },
+  { id: "paddock", label: "Paddock" },
   { id: "detail", label: "Details" },
   // Defined ready for future work - a filter only appears once it has photos.
-  { id: "circuit", label: "Circuit" },
   { id: "rally", label: "Rally" },
   { id: "endurance", label: "Endurance" },
-  { id: "pit-lane", label: "Pit Lane" },
   { id: "portrait", label: "Portraits" },
 ];
 

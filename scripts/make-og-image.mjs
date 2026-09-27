@@ -161,8 +161,47 @@ async function main() {
       .toBuffer();
 
     const label = `${list.length} photograph${list.length === 1 ? "" : "s"}`;
-    // Long event names need to step down or they run off the card.
-    const size = eventName.length > 22 ? 62 : eventName.length > 16 ? 74 : 88;
+
+    // Fit the event name to the card. A name like "Castle Combe Performance
+    // Action Day 2026" is far too long for one line at any readable size, so
+    // try progressively smaller type until it fits on at most two lines.
+    const MAX_W = W - 68 - 48;
+    const upper = eventName.toUpperCase();
+    // Arial Bold caps run about 0.63em per character on average.
+    const widthAt = (text, px) => text.length * px * 0.63;
+
+    let size = 88;
+    let lines = [upper];
+    for (; size >= 40; size -= 4) {
+      const words = upper.split(" ");
+      const built = [];
+      let line = "";
+      for (const word of words) {
+        const next = line ? `${line} ${word}` : word;
+        if (widthAt(next, size) <= MAX_W) {
+          line = next;
+        } else {
+          if (line) built.push(line);
+          line = word;
+        }
+      }
+      if (line) built.push(line);
+      if (built.length <= 2 && built.every((l) => widthAt(l, size) <= MAX_W)) {
+        lines = built;
+        break;
+      }
+    }
+
+    // Two lines need to start higher so the card stays balanced.
+    const lineHeight = Math.round(size * 1.04);
+    const nameTop = 392 + size + 12 - (lines.length - 1) * lineHeight;
+    const nameTspans = lines
+      .map(
+        (l, i) =>
+          `<tspan x="68" y="${nameTop + i * lineHeight}">${esc(l)}</tspan>`,
+      )
+      .join("");
+    const metaY = nameTop + (lines.length - 1) * lineHeight + 50;
 
     const svg = Buffer.from(`
 <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
@@ -179,11 +218,11 @@ async function main() {
   </defs>
   <rect width="${W}" height="${H}" fill="url(#l)"/>
   <rect width="${W}" height="${H}" fill="url(#b)"/>
-  <text x="72" y="392" font-family="Arial, Helvetica, sans-serif" font-weight="700"
+  <text x="72" y="${nameTop - size + 8}" font-family="Arial, Helvetica, sans-serif" font-weight="700"
         font-size="24" letter-spacing="5" fill="#e8452a">${esc(when.toUpperCase())}</text>
-  <text x="68" y="${392 + size + 12}" font-family="Arial, Helvetica, sans-serif" font-weight="700"
-        font-size="${size}" letter-spacing="-1.5" fill="#f4f4f2">${esc(eventName.toUpperCase())}</text>
-  <text x="72" y="${392 + size + 62}" font-family="Arial, Helvetica, sans-serif" font-weight="400"
+  <text font-family="Arial, Helvetica, sans-serif" font-weight="700"
+        font-size="${size}" letter-spacing="-1.5" fill="#f4f4f2">${nameTspans}</text>
+  <text x="72" y="${metaY}" font-family="Arial, Helvetica, sans-serif" font-weight="400"
         font-size="26" fill="#9b9ba4">${esc(label)}  ·  ${esc(name)}</text>
 </svg>`);
 

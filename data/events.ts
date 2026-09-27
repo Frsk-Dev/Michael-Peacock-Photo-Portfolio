@@ -33,6 +33,10 @@ export const eventDetails: Record<
   string,
   { blurb?: string; location?: string; coverId?: string }
 > = {
+  "castle-combe-performance-action-day-2026": {
+    blurb:
+      "Track sessions, drift runs, autograss buggies and junior karts, all on the same afternoon at Castle Combe.",
+  },
   "adamlz-world-tour-2026": {
     blurb:
       "Adam LZ's World Tour landing in the UK, with a full field of drivers running tandem all afternoon.",

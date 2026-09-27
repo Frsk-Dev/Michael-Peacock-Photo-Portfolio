@@ -44,12 +44,13 @@ const MANIFEST = path.join(ROOT, "data", "photos.json");
 
 const CATEGORY_IDS = [
   "drift",
-  "show",
-  "detail",
   "circuit",
+  "autograss",
+  "show",
+  "paddock",
+  "detail",
   "rally",
   "endurance",
-  "pit-lane",
   "portrait",
 ];
 const DEFAULT_CATEGORY = "drift";
