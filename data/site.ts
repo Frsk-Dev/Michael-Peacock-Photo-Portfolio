@@ -30,6 +30,14 @@ export const site = {
   email: "michaelpeacock1993@gmail.com",
   phone: "",
   location: "United Kingdom",
+
+  /**
+   * The contact form needs an email service behind it (see
+   * app/api/contact/route.ts). Until that is set up, the contact page points
+   * people at Instagram instead. Flip this to true once RESEND_API_KEY is in
+   * place and the form comes back - nothing else needs changing.
+   */
+  contactForm: false,
   /** Leave a value blank to hide that link entirely. */
   socials: {
     instagram: "https://instagram.com/mikeee.mylens",

@@ -5,19 +5,37 @@ import { site } from "@/data/site";
  * Contact form handler.
  *
  * Delivery uses Resend (https://resend.com) over its REST API, so there is no
- * extra dependency to install. Set these in .env.local to turn it on:
+ * extra dependency to install. The only setting that is actually required:
  *
  *   RESEND_API_KEY=re_xxxxxxxx
- *   CONTACT_TO=you@yourdomain.com          # optional, defaults to site.email
- *   CONTACT_FROM=site@yourdomain.com       # must be a Resend-verified domain
  *
- * Without a key the route returns a clear message and the form falls back to
- * a direct mailto link, so nothing silently disappears.
+ * Optional:
+ *   CONTACT_TO=you@example.com       defaults to site.email
+ *   CONTACT_FROM=site@yourdomain.com defaults to Resend's shared sender
+ *
+ * About the sender: Resend's default `onboarding@resend.dev` needs no DNS
+ * setup, but will only deliver to the address the Resend account was created
+ * with. That is exactly right for a contact form that only ever emails its
+ * owner. Verify your own domain in Resend later and set CONTACT_FROM to an
+ * address on it - messages then arrive from you rather than resend.dev, and
+ * are far less likely to be filtered.
+ *
+ * Without a key the route says so plainly and the form offers a direct mailto
+ * link instead, so a message is never silently lost.
  */
 
 export const runtime = "nodejs";
 
-/** Crude in-memory rate limit: 5 messages per IP per 10 minutes. */
+/**
+ * Crude in-memory rate limit: 5 sent messages per IP per 10 minutes.
+ *
+ * Only counts messages that actually get as far as being sent. Validation
+ * failures and honeypot hits are free, so someone who mistypes their email
+ * three times is not locked out before their first real attempt.
+ *
+ * Resets when the server restarts and is per-process, which is fine for a
+ * single instance behind Caddy.
+ */
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
 const hits = new Map<string, number[]>();
@@ -40,13 +58,6 @@ export async function POST(request: Request) {
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     request.headers.get("x-real-ip") ||
     "unknown";
-
-  if (rateLimited(ip)) {
-    return NextResponse.json(
-      { error: "Too many messages sent. Please try again later." },
-      { status: 429 },
-    );
-  }
 
   let payload: Record<string, unknown>;
   try {
@@ -81,17 +92,9 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO || site.email;
-  const from = process.env.CONTACT_FROM;
-
-  if (!apiKey || !from) {
-    return NextResponse.json(
-      {
-        error:
-          "The contact form is not connected to an email service yet.",
-      },
-      { status: 503 },
-    );
-  }
+  // Resend's shared sender works without verifying a domain. Override it once
+  // you have your own domain set up there.
+  const from = process.env.CONTACT_FROM || "Portfolio <onboarding@resend.dev>";
 
   const lines = [
     `Name:    ${name}`,
@@ -101,6 +104,29 @@ export async function POST(request: Request) {
     "",
     message,
   ].filter(Boolean);
+
+  if (!apiKey) {
+    // In development, show the message in the terminal so the form can be
+    // tested end to end before anyone signs up for anything.
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        `\n--- contact form (dev; set RESEND_API_KEY to send for real) ---\n` +
+          `To: ${to}\n${lines.join("\n")}\n---\n`,
+      );
+      return NextResponse.json({ ok: true, delivered: false });
+    }
+    return NextResponse.json(
+      { error: "The contact form is not connected to an email service yet." },
+      { status: 503 },
+    );
+  }
+
+  if (rateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Too many messages sent. Please try again in a little while." },
+      { status: 429 },
+    );
+  }
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -120,11 +146,16 @@ export async function POST(request: Request) {
 
     if (!res.ok) {
       const detail = await res.text();
-      console.error("Resend error:", res.status, detail);
-      return NextResponse.json(
-        { error: "The message could not be sent." },
-        { status: 502 },
-      );
+      console.error("Resend rejected the message:", res.status, detail);
+
+      // Resend returns 403 when the sender domain is not verified, or when
+      // the shared sender is used to reach anyone but the account owner.
+      // Telling the visitor to email directly is more use than "failed".
+      const hint =
+        res.status === 403
+          ? "The email service rejected the message. Please email me directly."
+          : "The message could not be sent.";
+      return NextResponse.json({ error: hint }, { status: 502 });
     }
 
     return NextResponse.json({ ok: true });
