@@ -33,7 +33,8 @@ export default function FeaturedGrid({ photos }: { photos: Photo[] }) {
                 fill
                 placeholder={photo.blurDataURL ? "blur" : "empty"}
                 blurDataURL={photo.blurDataURL}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
+                quality={82}
                 className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
               />
               <span

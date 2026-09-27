@@ -26,6 +26,7 @@ export default function HomePage() {
             placeholder={hero.blurDataURL ? "blur" : "empty"}
             blurDataURL={hero.blurDataURL}
             sizes="100vw"
+            quality={90}
             className="object-cover"
           />
         )}

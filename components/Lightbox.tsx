@@ -171,6 +171,7 @@ export default function Lightbox({
             width={photo.width}
             height={photo.height}
             sizes="(max-width: 768px) 100vw, 92vw"
+            quality={90}
             priority
             onLoad={() => setLoaded(true)}
             onError={() => setLoaded(true)}

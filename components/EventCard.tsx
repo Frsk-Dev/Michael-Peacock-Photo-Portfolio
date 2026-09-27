@@ -25,6 +25,7 @@ export default function EventCard({
           placeholder={album.cover.blurDataURL ? "blur" : "empty"}
           blurDataURL={album.cover.blurDataURL}
           sizes="(max-width: 640px) 100vw, 50vw"
+          quality={82}
           priority={priority}
           className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
         />

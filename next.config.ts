@@ -70,6 +70,13 @@ const nextConfig: NextConfig = {
     // which is slow to produce and no sharper.
     deviceSizes: [640, 828, 1080, 1200, 1600, 2048, 2560],
     imageSizes: [96, 128, 256, 384],
+    /**
+     * Next only serves qualities listed here, and defaults to 75 - visibly
+     * soft on a photography site once AVIF has had its way with the fine
+     * detail. Grid thumbnails use 82; the full-screen viewer and the hero
+     * use 90, where the difference actually shows.
+     */
+    qualities: [75, 82, 90],
   },
 };
 

@@ -148,7 +148,8 @@ export default function Gallery({ photos, categories }: Props) {
                 height={photo.height}
                 placeholder={photo.blurDataURL ? "blur" : "empty"}
                 blurDataURL={photo.blurDataURL}
-                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 33vw"
+                quality={82}
                 loading={i < 6 ? "eager" : "lazy"}
                 priority={i < 3}
                 className="w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"

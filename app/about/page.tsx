@@ -30,6 +30,7 @@ export default function AboutPage() {
                 alt={about.portraitAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
+                quality={82}
                 className="object-cover"
               />
             </div>
