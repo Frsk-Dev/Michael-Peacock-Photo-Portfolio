@@ -70,6 +70,15 @@
     overflow-x: hidden;
   }
 
+  /* Discourages saving photographs: no drag-to-desktop, and no long-press
+     "Save Image" sheet on iOS. Like the right-click block this is a
+     deterrent, not protection - the watermark does the real work. */
+  img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
   ::selection {
     background: var(--color-accent);
     color: #fff;

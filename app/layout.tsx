@@ -4,6 +4,7 @@ import { site } from "@/data/site";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import RevealProvider from "@/components/RevealProvider";
+import ImageProtection from "@/components/ImageProtection";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -94,6 +95,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <RevealProvider />
+        <ImageProtection />
         <SiteHeader />
         <main id="main">{children}</main>
         <SiteFooter />

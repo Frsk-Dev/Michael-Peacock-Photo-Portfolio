@@ -14,3 +14,10 @@ next-env.d.ts
 # build artefacts
 /deploy/
 .sharp-target/
+
+# watermark preview
+.watermark-preview/
+
+# watermark previews
+watermark-previews/
+.watermark-preview/

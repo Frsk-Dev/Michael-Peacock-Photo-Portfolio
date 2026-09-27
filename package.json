@@ -10,7 +10,8 @@
     "lint": "next lint",
     "import-photos": "node scripts/import-photos.mjs",
     "build:deploy": "node scripts/build-deploy.mjs",
-    "build:og": "node scripts/make-og-image.mjs"
+    "build:og": "node scripts/make-og-image.mjs",
+    "watermark": "node scripts/watermark.mjs"
   },
   "dependencies": {
     "next": "^16.3.4",
